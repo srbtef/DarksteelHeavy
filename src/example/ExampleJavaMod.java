@@ -1,7 +1,6 @@
 package src.example;
 
 import mindustry.Vars;
-import mindustry.content.Blocks;
 import mindustry.game.Team;
 import mindustry.mod.Mod;
 import mindustry.world.Tile;
@@ -11,7 +10,7 @@ public class ExampleJavaMod extends Mod {
     @Override
     public void loadContent(){
         Test democore = new Test("democore");
-        Vars.content.blocks.add(democore);
+        Vars.content.blockSeq.add(democore);
     }
 }
 
