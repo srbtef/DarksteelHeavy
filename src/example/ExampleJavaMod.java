@@ -1,12 +1,22 @@
 package src.example;
 
+import mindustry.Vars;
 import mindustry.game.Team;
+import mindustry.mod.Mod;
 import mindustry.world.Tile;
 import mindustry.world.blocks.storage.CoreBlock;
+import mindustry.world.blocks.storage.CoreBlock.CoreBuild;
 
-public class ExampleJavaMod extends CoreBlock{
+public class ExampleJavaMod extends Mod {
+    @Override
+    public void loadContent(){
+        Test democore = new Test("democore");
+        Vars.content.add(democore);
+    }
+}
 
-    public ExanmpleJavaMod(String name){
+class Test extends CoreBlock {
+    public Test(String name){
         super(name);
         size = 3;
         health = 5000;
@@ -18,18 +28,9 @@ public class ExampleJavaMod extends CoreBlock{
     public boolean canBreak(Tile tile){
         return true;
     }
-        @Override
-    public boolean canPlaceOn(Tile tile, Team team, int rotation){
-        if(tile == null) return false;
-        //in the editor, you can place them anywhere for convenience
-        if(state.isEditor()) return true;
-        if(!state.isEditor()) return true;
-        
-        CoreBuild core = team.core();
 
-        //special floor upon which cores can be placed
-        tile.getLinkedTilesAs(this, tempTiles);
-        if(!tempTiles.contains(o -> !o.floor().allowCorePlacement || o.block() instanceof CoreBlock)){
-            return true;
-        }
+    @Override
+    public boolean canPlaceOn(Tile tile, Team team, int rotation){
+        return tile != null;
     }
+}
