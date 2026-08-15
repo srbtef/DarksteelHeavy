@@ -1,6 +1,5 @@
 package src.example;
 
-import mindustry.content.*;
 import mindustry.gen.*;
 import mindustry.type.*;
 import mindustry.world.*;
@@ -10,14 +9,11 @@ public class Test extends CoreBlock {
 
     public Test(String name){
         super(name);
-        //方块尺寸
         size = 3;
         health = 5000;
         itemCapacity = 5000;
-        //开启允许拆卸
-        canDeconstruct = true;
-        //拆掉之后掉落这个方块物品
-        deconstructDrop = true;
+        //允许拆卸（方块全局开关）
+        destructible = true;
     }
 
     @Override
@@ -25,19 +21,14 @@ public class Test extends CoreBlock {
         super.setStats();
     }
 
-    //建筑实体
     public class TestBuild extends CoreBuild{
-
-        //拆卸成功回调
+        //拦截拆卸指令
         @Override
-        public boolean deconstruct(){
-            //执行原版拆卸逻辑
-            boolean ok = super.deconstruct();
-            if(ok){
-                //在方块位置生成掉落物
-                ItemDrop.drop(block, tile.worldx(), tile.worldy());
-            }
-            return ok;
+        public boolean onDeconstructed(){
+            super.onDeconstructed();
+            //掉落自身方块物品
+            FloatingItem.create(block.item, tile.worldx(), tile.worldy()).add();
+            return true;
         }
     }
 }
