@@ -1,11 +1,12 @@
 package src.example;
-import mindustry.mod.*;
-import mindustry.ctype.Content;
 
-public class ExampleJavaMod extends Mod{
+import mindustry.Vars;
+import mindustry.mod.Mod;
+
+public class ExampleJavaMod extends Mod {
     @Override
     public void loadContent(){
-        Test core = new Test("democore");
-        content.register(core);
+        Test democore = new Test("democore");
+        Vars.content.register(democore);
     }
 }

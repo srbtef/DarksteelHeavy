@@ -1,8 +1,8 @@
 package src.example;
 
-import mindustry.gen.*;
-import mindustry.type.*;
-import mindustry.world.*;
+import mindustry.Vars;
+import mindustry.gen.FloatingItem;
+import mindustry.gen.Unit;
 import mindustry.world.blocks.storage.CoreBlock;
 
 public class Test extends CoreBlock {
@@ -12,8 +12,10 @@ public class Test extends CoreBlock {
         size = 3;
         health = 5000;
         itemCapacity = 5000;
-        //允许拆卸（方块全局开关）
+        // 开启可拆卸
         destructible = true;
+        // 拆卸掉落自身对应物品
+        itemDrop = Vars.content.item(name);
     }
 
     @Override
@@ -22,13 +24,15 @@ public class Test extends CoreBlock {
     }
 
     public class TestBuild extends CoreBuild{
-        //拦截拆卸指令
+
+        // 拆卸完成回调，必须带Unit参数匹配父类签名
         @Override
-        public boolean onDeconstructed(){
-            super.onDeconstructed();
-            //掉落自身方块物品
-            FloatingItem.create(block.item, tile.worldx(), tile.worldy()).add();
-            return true;
+        public void onDeconstructed(Unit deconstructor){
+            super.onDeconstructed(deconstructor);
+            // 生成掉落物
+            if(block.itemDrop != null){
+                FloatingItem.create(block.itemDrop, tile.worldx(), tile.worldy()).add();
+            }
         }
     }
 }
