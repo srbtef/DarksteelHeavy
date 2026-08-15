@@ -10,7 +10,7 @@ public class ExampleJavaMod extends Mod {
     @Override
     public void loadContent(){
         Test democore = new Test("democore");
-        Vars.content.blockSeq.add(democore);
+        Vars.content.blocks().add(democore);
     }
 }
 
