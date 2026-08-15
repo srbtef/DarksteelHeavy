@@ -1,17 +1,16 @@
 package src.example;
 
-import mindustry.Vars;
 import mindustry.game.Team;
 import mindustry.mod.Mod;
 import mindustry.world.Tile;
+import mindustry.world.Blocks;
 import mindustry.world.blocks.storage.CoreBlock;
-import mindustry.world.blocks.storage.CoreBlock.CoreBuild;
 
 public class ExampleJavaMod extends Mod {
     @Override
     public void loadContent(){
         Test democore = new Test("democore");
-        Vars.content.add(democore);
+        Blocks.add(democore);
     }
 }
 
