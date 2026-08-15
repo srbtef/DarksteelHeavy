@@ -8,7 +8,7 @@ import mindustry.ui.dialogs.*;
 
 public class Test extends Mod{
 
-    public ExampleJavaMod(){
+    public Test(){
         Log.info("Loaded ExampleJavaMod constructor.");
 
         //listen for game load event
