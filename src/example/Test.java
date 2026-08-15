@@ -1,33 +1,43 @@
-package example;
+package src.example;
 
-import arc.*;
-import arc.util.*;
-import mindustry.game.EventType.*;
-import mindustry.mod.*;
-import mindustry.ui.dialogs.*;
+import mindustry.content.*;
+import mindustry.gen.*;
+import mindustry.type.*;
+import mindustry.world.*;
+import mindustry.world.blocks.storage.CoreBlock;
 
-public class Test extends Mod{
+public class Test extends CoreBlock {
 
-    public Test(){
-        Log.info("Loaded ExampleJavaMod constructor.");
-
-        //listen for game load event
-        Events.on(ClientLoadEvent.class, e -> {
-            //show dialog upon startup
-            Time.runTask(10f, () -> {
-                BaseDialog dialog = new BaseDialog("frog");
-                dialog.cont.add("behold").row();
-                //mod sprites are prefixed with the mod name (this mod is called 'example-java-mod' in its config)
-                dialog.cont.image(Core.atlas.find("example-java-mod-frog")).pad(20f).row();
-                dialog.cont.button("I see", dialog::hide).size(100f, 50f);
-                dialog.show();
-            });
-        });
+    public Test(String name){
+        super(name);
+        //方块尺寸
+        size = 3;
+        health = 5000;
+        itemCapacity = 5000;
+        //开启允许拆卸
+        canDeconstruct = true;
+        //拆掉之后掉落这个方块物品
+        deconstructDrop = true;
     }
 
     @Override
-    public void loadContent(){
-        Log.info("Loading some example content.");
+    public void setStats(){
+        super.setStats();
     }
 
+    //建筑实体
+    public class TestBuild extends CoreBuild{
+
+        //拆卸成功回调
+        @Override
+        public boolean deconstruct(){
+            //执行原版拆卸逻辑
+            boolean ok = super.deconstruct();
+            if(ok){
+                //在方块位置生成掉落物
+                ItemDrop.drop(block, tile.worldx(), tile.worldy());
+            }
+            return ok;
+        }
+    }
 }
