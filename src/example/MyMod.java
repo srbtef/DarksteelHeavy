@@ -8,7 +8,6 @@ import mindustry.game.EventType.*;
 import mindustry.mod.*;
 import mindustry.ui.dialogs.*;
 import example.SimpleCore;
-import example.MLPlanets;
 
 public class MyMod extends Mod {
 
@@ -20,6 +19,5 @@ public class MyMod extends Mod {
     public void loadContent() {
         Log.info("Loading content.");
         new SimpleCore();
-        new MLPlanets();
     }
 }
