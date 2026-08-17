@@ -5,7 +5,6 @@ import arc.math.geom.Vec3;
 import arc.util.noise.Simplex;
 import mindustry.content.Blocks;
 import mindustry.content.Planets;
-import mindustry.game.Sector;
 import mindustry.graphics.g3d.HexMesh;
 import mindustry.graphics.g3d.HexSkyMesh;
 import mindustry.graphics.g3d.MultiMesh;
@@ -64,7 +63,8 @@ public class MLPlanets {
             atmosphereRadIn = 0.02f;
             atmosphereRadOut = 0.3f;
 
-            sectors.add(new Sector(this, new Ptile(0, 0)));
+            //直接添加Ptile，去掉new Sector
+            sectors.add(new Ptile(0, 0));
         }};
     }
 }
