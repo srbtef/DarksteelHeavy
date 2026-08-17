@@ -1,6 +1,6 @@
 package example;
 
-import arc.struct.ObjectSet;
+import java.util.EnumSet;
 import mindustry.content.Items;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
@@ -16,7 +16,7 @@ public class SimpleCore extends CoreBlock {
         size = 2;
         health = 1000;
         solid = true;
-        flags = ObjectSet.with(BlockFlag.core);
+        flags = EnumSet.of(BlockFlag.core);
         category = Category.effect;
         requirements(Category.effect, ItemStack.with(
             Items.copper, 100,
