@@ -12,6 +12,8 @@ import mindustry.graphics.g3d.PlanetGrid.Ptile;
 import mindustry.maps.generators.PlanetGenerator;
 import mindustry.type.Planet;
 import mindustry.world.TileGen;
+//导入能量环
+import example.NovelberEnergyRingMesh;
 
 public class MLPlanets {
     public static Planet cecilia;
@@ -44,7 +46,9 @@ public class MLPlanets {
                 new HexSkyMesh(this, 2, 0.15f, 0.14f, 5,
                         Color.valueOf("97B5EDFF").a(0.75f), 2, 0.42f, 1f, 0.43f),
                 new HexSkyMesh(this, 3, 0.6f, 0.15f, 5,
-                        Color.valueOf("97B5EDFF").a(0.70f), 2, 0.42f, 1.2f, 0.45f)
+                        Color.valueOf("97B5EDFF").a(0.70f), 2, 0.42f, 1.2f, 0.45f),
+                //新增能量环
+                new NovelberEnergyRingMesh(this)
             );
 
             localizedName = "塞西莉亚";
