@@ -25,27 +25,33 @@ public class MLPlanets {
 
     /** 自定义高山星球生成器 */
     public static class CeciliaGenerator extends PlanetGenerator {
+
         @Override
-        protected void genTile(Vec3 position, TileGen tile) {
-            // 用父类的 noise 方法生成地形高度
+        public void genTile(Vec3 position, TileGen tile) {
+            // 噪声地形高度 (0~1)
             float h = (noise(position.x, position.y, 7, 0.5f, 80) + 1f) / 2f;
 
-            if (h > 0.88f) {
-                // 高山区：地面是石头，上面放一层墙（模拟高山）
+            // 根据高度分层
+            if (h > 0.76f) {
+                // 高山区：石头地面 + 高山方块
                 tile.floor = Blocks.stone;
                 tile.block = Blocks.stone;
             } else if (h > 0.60f) {
-                // 岩石区
+                // 岩石区：石头地面
                 tile.floor = Blocks.stone;
-            } else if (h > 0.42f) {
+                tile.block = Blocks.air;
+            } else if (h > 0.45f) {
                 // 沙地区
                 tile.floor = Blocks.sand;
-            } else if (h > 0.28f) {
+                tile.block = Blocks.air;
+            } else if (h > 0.30f) {
                 // 冰区
                 tile.floor = Blocks.ice;
+                tile.block = Blocks.air;
             } else {
-                // 低地冰区
+                // 深冰
                 tile.floor = Blocks.ice;
+                tile.block = Blocks.air;
             }
         }
     }
