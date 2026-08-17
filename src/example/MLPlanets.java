@@ -1,4 +1,4 @@
-package magical.content;
+package example;
 
 import mindustry.content.Planets;
 import arc.func.*;
