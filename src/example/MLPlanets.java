@@ -54,13 +54,13 @@ public class MLPlanets {
          cecilia = new Planet("cecilia", Planets.sun, 1f, 3) {{
             generator = new CeciliaGenerator();
             meshLoader = () -> new HexMesh(this, 6);
+            mesh = new EnergyRingMesh(this);
             cloudMeshLoader = () -> new MultiMesh(
                     new HexSkyMesh(this, 2, 0.15f, 0.14f, 5, Color.valueOf("97B5EDFF").a(0.75f), 2, 0.42f, 1f, 0.43f),
                     new HexSkyMesh(this, 3, 0.6f, 0.15f, 5, Color.valueOf("97B5EDFF").a(0.75f), 2, 0.42f, 1.2f, 0.45f)
             );
 
             // 添加星环！
-            addMesh(new EnergyRingMesh(this));
 
             launchCapacityMultiplier = 0f;
             sectorSeed = 1;
