@@ -42,13 +42,13 @@ public class EnergyRingMesh extends PlanetMesh {
         shader.bind();
         shader.setUniformMatrix4("u_proj", projection.val);
         shader.setUniformMatrix4("u_trans", transform.val);
-        shader.setUniformf("u_time", Time.time() / 60f);
+        shader.setUniformf("u_time", Time.globalTime / 60f);
         shader.setUniformf("u_alpha", 0.9f);
         shader.setUniformf("u_lightdir", lightDir.x, lightDir.y, lightDir.z);
         shader.setUniformf("u_campos",
             planet.position.x, planet.position.y, planet.position.z);
         shader.apply();
-        mesh.render(shader, 4);
+        mesh.render(shader, 4); // GL_TRIANGLES=4
         Blending.normal.apply();
         Gl.depthMask(true);
     }
@@ -114,7 +114,7 @@ public class EnergyRingMesh extends PlanetMesh {
                 outerGlowR*c1, thick+glowOff, outerGlowR*s1,  0,1,0,  (float)i/segs, 1);
         }
 
-        int verts = data.size / 8; // 8 floats per vertex: pos3+normal3+uv2
+        int verts = data.size / 8;
         VertexAttribute[] attrs = new VertexAttribute[]{
             VertexAttribute.position3,
             VertexAttribute.normal3,
