@@ -27,30 +27,25 @@ public class MLPlanets {
     public static class CeciliaGenerator extends PlanetGenerator {
         @Override
         protected void genTile(Vec3 position, TileGen tile) {
-            // 使用噪声生成地形高度
-            float noise = noise(position.x, position.y, 8, 0.5, 110);
-            float h = (float)(Simplex.noise3d(
-                (long)(seed + 1), 8, 0.5, 1f / 110,
-                position.x, position.y, position.z
-            ) + 1) / 2f;
+            // 用父类的 noise 方法生成地形高度
+            float h = (noise(position.x, position.y, 7, 0.5f, 80) + 1f) / 2f;
 
             if (h > 0.78f) {
                 // 高山
-                tile.floor = Blocks.peak1;
-                tile.block = Blocks.peak1;
-            } else if (h > 0.62f) {
+                tile.block = Blocks.wall;
+                tile.floor = Blocks.stone;
+            } else if (h > 0.60f) {
                 // 岩石
                 tile.floor = Blocks.stone;
-                tile.block = Blocks.stone;
-            } else if (h > 0.48f) {
-                // 粗糙岩石
-                tile.floor = Blocks.roughRocks;
-            } else if (h > 0.32f) {
+            } else if (h > 0.42f) {
+                // 沙地
+                tile.floor = Blocks.sand;
+            } else if (h > 0.28f) {
                 // 普通岩石
-                tile.floor = Blocks.rock;
+                tile.floor = Blocks.ice;
             } else {
-                // 地面
-                tile.floor = Blocks.floor1;
+                // 地面/冰
+                tile.floor = Blocks.ice;
             }
         }
     }
