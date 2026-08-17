@@ -149,8 +149,8 @@ public class EnergyRingMesh extends PlanetMesh {
         int verts = data.size / 8;
         VertexAttribute[] attrs = new VertexAttribute[]{
             VertexAttribute.position3,
-            VertexAttribute.normal3,
-            VertexAttribute.texCoords2
+            VertexAttribute.normal,
+            VertexAttribute.texCoords
         };
         Mesh m = new Mesh(true, verts, 8, attrs);
         m.setVertices(data.items, 0, data.size);
