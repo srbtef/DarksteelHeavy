@@ -48,7 +48,7 @@ public class EnergyRingMesh extends PlanetMesh {
         shader.setUniformf("u_campos",
             planet.position.x, planet.position.y, planet.position.z);
         shader.apply();
-        mesh.render(shader, 4); // GL_TRIANGLES=4
+        mesh.render(shader, 4);
         Blending.normal.apply();
         Gl.depthMask(true);
     }
@@ -68,50 +68,82 @@ public class EnergyRingMesh extends PlanetMesh {
             float c1 = (float)StrictMath.cos(a1), s1 = (float)StrictMath.sin(a1);
             float c2 = (float)StrictMath.cos(a2), s2 = (float)StrictMath.sin(a2);
 
-            // 正面
-            quad(data,
-                innerR*c1, thick, innerR*s1,   0,1,0,  (float)i/segs, 0,
-                outerR*c1, thick, outerR*s1,   0,1,0,  (float)i/segs, 1,
-                outerR*c2, thick, outerR*s2,   0,1,0,  (float)(i+1)/segs, 1,
-                innerR*c1, thick, innerR*s1,   0,1,0,  (float)i/segs, 0,
-                outerR*c2, thick, outerR*s2,   0,1,0,  (float)(i+1)/segs, 1,
-                innerR*c2, thick, innerR*s2,   0,1,0,  (float)(i+1)/segs, 0);
+            float u1 = (float)i / segs, u2 = (float)(i + 1) / segs;
 
-            // 背面
-            quad(data,
-                innerR*c1, 0, innerR*s1,   0,-1,0,  (float)i/segs, 0,
-                innerR*c2, 0, innerR*s2,   0,-1,0,  (float)(i+1)/segs, 0,
-                outerR*c1, 0, outerR*s1,   0,-1,0,  (float)i/segs, 1,
-                innerR*c2, 0, innerR*s2,   0,-1,0,  (float)(i+1)/segs, 0,
-                outerR*c2, 0, outerR*s2,   0,-1,0,  (float)(i+1)/segs, 1,
-                outerR*c1, 0, outerR*s1,   0,-1,0,  (float)i/segs, 1);
+            // 正面三角形1
+            data.add(innerR*c1, thick, innerR*s1);
+            data.add(0f, 1f, 0f); data.add(u1, 0f);
+            data.add(outerR*c1, thick, outerR*s1);
+            data.add(0f, 1f, 0f); data.add(u1, 1f);
+            data.add(outerR*c2, thick, outerR*s2);
+            data.add(0f, 1f, 0f); data.add(u2, 1f);
+            // 正面三角形2
+            data.add(innerR*c1, thick, innerR*s1);
+            data.add(0f, 1f, 0f); data.add(u1, 0f);
+            data.add(outerR*c2, thick, outerR*s2);
+            data.add(0f, 1f, 0f); data.add(u2, 1f);
+            data.add(innerR*c2, thick, innerR*s2);
+            data.add(0f, 1f, 0f); data.add(u2, 0f);
 
-            // 内侧面
-            quad(data,
-                innerR*c1, 0, innerR*s1,  c1,0,s1,  (float)i/segs, 0,
-                innerR*c1, thick, innerR*s1,  c1,0,s1,  (float)i/segs, 1,
-                innerR*c2, thick, innerR*s2,  c2,0,s2,  (float)(i+1)/segs, 1,
-                innerR*c1, 0, innerR*s1,  c1,0,s1,  (float)i/segs, 0,
-                innerR*c2, thick, innerR*s2,  c2,0,s2,  (float)(i+1)/segs, 1,
-                innerR*c2, 0, innerR*s2,  c2,0,s2,  (float)(i+1)/segs, 0);
+            // 背面三角形1
+            data.add(innerR*c1, 0f, innerR*s1);
+            data.add(0f, -1f, 0f); data.add(u1, 0f);
+            data.add(innerR*c2, 0f, innerR*s2);
+            data.add(0f, -1f, 0f); data.add(u2, 0f);
+            data.add(outerR*c1, 0f, outerR*s1);
+            data.add(0f, -1f, 0f); data.add(u1, 1f);
+            // 背面三角形2
+            data.add(innerR*c2, 0f, innerR*s2);
+            data.add(0f, -1f, 0f); data.add(u2, 0f);
+            data.add(outerR*c2, 0f, outerR*s2);
+            data.add(0f, -1f, 0f); data.add(u2, 1f);
+            data.add(outerR*c1, 0f, outerR*s1);
+            data.add(0f, -1f, 0f); data.add(u1, 1f);
 
-            // 外侧面
-            quad(data,
-                outerR*c1, 0, outerR*s1,  -c1,0,-s1,  (float)i/segs, 0,
-                outerR*c2, 0, outerR*s2,  -c2,0,-s2,  (float)(i+1)/segs, 0,
-                outerR*c1, thick, outerR*s1,  -c1,0,-s1,  (float)i/segs, 1,
-                outerR*c2, 0, outerR*s2,  -c2,0,-s2,  (float)(i+1)/segs, 0,
-                outerR*c2, thick, outerR*s2,  -c2,0,-s2,  (float)(i+1)/segs, 1,
-                outerR*c1, thick, outerR*s1,  -c1,0,-s1,  (float)i/segs, 1);
+            // 内侧面三角形1
+            data.add(innerR*c1, 0f, innerR*s1);
+            data.add(c1, 0f, s1); data.add(u1, 0f);
+            data.add(innerR*c1, thick, innerR*s1);
+            data.add(c1, 0f, s1); data.add(u1, 1f);
+            data.add(innerR*c2, thick, innerR*s2);
+            data.add(c2, 0f, s2); data.add(u2, 1f);
+            // 内侧面三角形2
+            data.add(innerR*c1, 0f, innerR*s1);
+            data.add(c1, 0f, s1); data.add(u1, 0f);
+            data.add(innerR*c2, thick, innerR*s2);
+            data.add(c2, 0f, s2); data.add(u2, 1f);
+            data.add(innerR*c2, 0f, innerR*s2);
+            data.add(c2, 0f, s2); data.add(u2, 0f);
 
-            // 光晕
-            quad(data,
-                innerGlowR*c1, thick, innerGlowR*s1,  0,1,0,  (float)i/segs, 0,
-                innerGlowR*c2, thick, innerGlowR*s2,  0,1,0,  (float)(i+1)/segs, 0,
-                outerGlowR*c2, thick+glowOff, outerGlowR*s2,  0,1,0,  (float)(i+1)/segs, 1,
-                innerGlowR*c1, thick, innerGlowR*s1,  0,1,0,  (float)i/segs, 0,
-                outerGlowR*c2, thick+glowOff, outerGlowR*s2,  0,1,0,  (float)(i+1)/segs, 1,
-                outerGlowR*c1, thick+glowOff, outerGlowR*s1,  0,1,0,  (float)i/segs, 1);
+            // 外侧面三角形1
+            data.add(outerR*c1, 0f, outerR*s1);
+            data.add(-c1, 0f, -s1); data.add(u1, 0f);
+            data.add(outerR*c2, 0f, outerR*s2);
+            data.add(-c2, 0f, -s2); data.add(u2, 0f);
+            data.add(outerR*c1, thick, outerR*s1);
+            data.add(-c1, 0f, -s1); data.add(u1, 1f);
+            // 外侧面三角形2
+            data.add(outerR*c2, 0f, outerR*s2);
+            data.add(-c2, 0f, -s2); data.add(u2, 0f);
+            data.add(outerR*c2, thick, outerR*s2);
+            data.add(-c2, 0f, -s2); data.add(u2, 1f);
+            data.add(outerR*c1, thick, outerR*s1);
+            data.add(-c1, 0f, -s1); data.add(u1, 1f);
+
+            // 光晕三角形1
+            data.add(innerGlowR*c1, thick, innerGlowR*s1);
+            data.add(0f, 1f, 0f); data.add(u1, 0f);
+            data.add(innerGlowR*c2, thick, innerGlowR*s2);
+            data.add(0f, 1f, 0f); data.add(u2, 0f);
+            data.add(outerGlowR*c2, thick+glowOff, outerGlowR*s2);
+            data.add(0f, 1f, 0f); data.add(u2, 1f);
+            // 光晕三角形2
+            data.add(innerGlowR*c1, thick, innerGlowR*s1);
+            data.add(0f, 1f, 0f); data.add(u1, 0f);
+            data.add(outerGlowR*c2, thick+glowOff, outerGlowR*s2);
+            data.add(0f, 1f, 0f); data.add(u2, 1f);
+            data.add(outerGlowR*c1, thick+glowOff, outerGlowR*s1);
+            data.add(0f, 1f, 0f); data.add(u1, 1f);
         }
 
         int verts = data.size / 8;
@@ -123,26 +155,6 @@ public class EnergyRingMesh extends PlanetMesh {
         Mesh m = new Mesh(true, verts, 8, attrs);
         m.setVertices(data.items, 0, data.size);
         return m;
-    }
-
-    private void quad(FloatSeq d,
-            float x1,float y1,float z1, float nx1,float ny1,float nz1, float u1,float v1,
-            float x2,float y2,float z2, float nx2,float ny2,float nz2, float u2,float v2,
-            float x3,float y3,float z3, float nx3,float ny3,float nz3, float u3,float v3,
-            float x4,float y4,float z4, float nx4,float ny4,float nz4, float u4,float v4) {
-        vtx(d, x1,y1,z1, nx1,ny1,nz1, u1,v1);
-        vtx(d, x2,y2,z2, nx2,ny2,nz2, u2,v2);
-        vtx(d, x3,y3,z3, nx3,ny3,nz3, u3,v3);
-        vtx(d, x1,y1,z1, nx1,ny1,nz1, u1,v1);
-        vtx(d, x3,y3,z3, nx3,ny3,nz3, u3,v3);
-        vtx(d, x4,y4,z4, nx4,ny4,nz4, u4,v4);
-    }
-
-    private void vtx(FloatSeq d, float x,float y,float z,
-            float nx,float ny,float nz, float u,float v) {
-        d.add(x, y, z);
-        d.add(nx, ny, nz);
-        d.add(u, v);
     }
 
     @Override
