@@ -5,6 +5,7 @@ import arc.math.geom.Vec3;
 import arc.util.noise.Simplex;
 import mindustry.content.Blocks;
 import mindustry.content.Planets;
+import mindustry.game.Sector;
 import mindustry.graphics.g3d.HexMesh;
 import mindustry.graphics.g3d.HexSkyMesh;
 import mindustry.graphics.g3d.MultiMesh;
@@ -12,7 +13,6 @@ import mindustry.graphics.g3d.PlanetGrid.Ptile;
 import mindustry.maps.generators.PlanetGenerator;
 import mindustry.type.Planet;
 import mindustry.world.TileGen;
-import mindustry.gen.Sector;
 
 public class MLPlanets {
     public static Planet cecilia;
@@ -42,10 +42,8 @@ public class MLPlanets {
 
             meshLoader = () -> new MultiMesh(
                 new HexMesh(this, 6),
-                //第一层云，透明度0.75
                 new HexSkyMesh(this, 2, 0.15f, 0.14f, 5,
                         Color.valueOf("97B5EDFF").a(0.75f), 2, 0.42f, 1f, 0.43f),
-                //第二层云，透明度0.70
                 new HexSkyMesh(this, 3, 0.6f, 0.15f, 5,
                         Color.valueOf("97B5EDFF").a(0.70f), 2, 0.42f, 1.2f, 0.45f)
             );
