@@ -1,4 +1,4 @@
-package com.example.mymod;
+package example.mymod;
 
 import arc.*;
 import arc.util.*;
