@@ -10,129 +10,137 @@ import mindustry.type.*;
 import mindustry.graphics.*;
 import static mindustry.Vars.*;
 
-public class EnergyRingMesh extends PlanetMesh {
+public class EnergyRingMesh implements GenericMesh {
+    public Planet planet;
+    public Shader shader;
     public Vec3 lightDir = new Vec3();
+    public Mesh mesh;
 
     public EnergyRingMesh(Planet planet) {
         this.planet = planet;
     }
 
-    private Mesh buildRing() {
-        FloatSeq data = new FloatSeq(12000);
-
-        float innerR = 2.2f, outerR = 2.8f;
-        float thick = 0.12f;
-        float glowOff = 0.15f;
-        float innerGlowR = 2.0f;
-        float outerGlowR = 3.0f;
+    private Mesh buildMesh() {
+        FloatSeq data = new FloatSeq(15000);
         int segs = 120;
+        float innerR = 2.2f, outerR = 2.8f;
+        float thick = 0.1f;
+        float glowOff = 0.2f;
+        float innerGlowR = 1.9f, outerGlowR = 3.1f;
+        float twoPi = (float)(Math.PI * 2);
 
         for (int i = 0; i < segs; i++) {
-            float a1 = (float)i / segs * (float)(Math.PI * 2);
-            float a2 = (float)(i + 1) / segs * (float)(Math.PI * 2);
-
+            float a1 = (float)i / segs * twoPi;
+            float a2 = (float)(i + 1) / segs * twoPi;
             float c1 = (float)StrictMath.cos(a1), s1 = (float)StrictMath.sin(a1);
             float c2 = (float)StrictMath.cos(a2), s2 = (float)StrictMath.sin(a2);
-            float c1i = c1, s1i = s1;
-            float c2i = c2, s2i = s2;
-            float c1o = c1, s1o = s1;
-            float c2o = c2, s2o = s2;
-
-            float ix1 = innerR * c1i, iz1 = innerR * s1i;
-            float ix2 = innerR * c2i, iz2 = innerR * s2i;
-            float ox1 = outerR * c1o, oz1 = outerR * s1o;
-            float ox2 = outerR * c2o, oz2 = outerR * s2o;
 
             // 正面
-            vtx(data, ix1, thick, iz1,  0,1,0,  (float)i/segs, 0, 0);
-            vtx(data, ox1, thick, oz1,  0,1,0,  (float)i/segs, 1, 0);
-            vtx(data, ox2, thick, oz2,  0,1,0,  (float)(i+1)/segs, 1, 0);
-            vtx(data, ix1, thick, iz1,  0,1,0,  (float)i/segs, 0, 0);
-            vtx(data, ox2, thick, oz2,  0,1,0,  (float)(i+1)/segs, 1, 0);
-            vtx(data, ix2, thick, iz2,  0,1,0,  (float)(i+1)/segs, 0, 0);
+            addQuad(data,
+                innerR*c1, thick, innerR*s1,   0,1,0,  (float)i/segs, 0,
+                outerR*c1, thick, outerR*s1,   0,1,0,  (float)i/segs, 1,
+                outerR*c2, thick, outerR*s2,   0,1,0,  (float)(i+1)/segs, 1,
+                innerR*c1, thick, innerR*s1,   0,1,0,  (float)i/segs, 0,
+                outerR*c2, thick, outerR*s2,   0,1,0,  (float)(i+1)/segs, 1,
+                innerR*c2, thick, innerR*s2,   0,1,0,  (float)(i+1)/segs, 0);
+
             // 背面
-            vtx(data, ix1, 0, iz1,  0,-1,0,  (float)i/segs, 0, 0);
-            vtx(data, ix2, 0, iz2,  0,-1,0,  (float)(i+1)/segs, 0, 0);
-            vtx(data, ox1, 0, oz1,  0,-1,0,  (float)i/segs, 1, 0);
-            vtx(data, ix2, 0, iz2,  0,-1,0,  (float)(i+1)/segs, 0, 0);
-            vtx(data, ox2, 0, oz2,  0,-1,0,  (float)(i+1)/segs, 1, 0);
-            vtx(data, ox1, 0, oz1,  0,-1,0,  (float)i/segs, 1, 0);
+            addQuad(data,
+                innerR*c1, 0, innerR*s1,   0,-1,0,  (float)i/segs, 0,
+                innerR*c2, 0, innerR*s2,   0,-1,0,  (float)(i+1)/segs, 0,
+                outerR*c1, 0, outerR*s1,   0,-1,0,  (float)i/segs, 1,
+                innerR*c2, 0, innerR*s2,   0,-1,0,  (float)(i+1)/segs, 0,
+                outerR*c2, 0, outerR*s2,   0,-1,0,  (float)(i+1)/segs, 1,
+                outerR*c1, 0, outerR*s1,   0,-1,0,  (float)i/segs, 1);
+
             // 内侧面
-            vtx(data, ix1, 0,      iz1,  c1i,0,s1i,  (float)i/segs, 0, 1);
-            vtx(data, ix2, 0,      iz2,  c2i,0,s2i,  (float)(i+1)/segs, 0, 1);
-            vtx(data, ix1, thick,  iz1,  c1i,0,s1i,  (float)i/segs, 1, 1);
-            vtx(data, ix2, 0,      iz2,  c2i,0,s2i,  (float)(i+1)/segs, 0, 1);
-            vtx(data, ix2, thick,  iz2,  c2i,0,s2i,  (float)(i+1)/segs, 1, 1);
-            vtx(data, ix1, thick,  iz1,  c1i,0,s1i,  (float)i/segs, 1, 1);
+            addQuad(data,
+                innerR*c1, 0, innerR*s1,  c1,0,s1,  (float)i/segs, 0,
+                innerR*c1, thick, innerR*s1,  c1,0,s1,  (float)i/segs, 1,
+                innerR*c2, thick, innerR*s2,  c2,0,s2,  (float)(i+1)/segs, 1,
+                innerR*c1, 0, innerR*s1,  c1,0,s1,  (float)i/segs, 0,
+                innerR*c2, thick, innerR*s2,  c2,0,s2,  (float)(i+1)/segs, 1,
+                innerR*c2, 0, innerR*s2,  c2,0,s2,  (float)(i+1)/segs, 0);
+
             // 外侧面
-            vtx(data, ox1, 0,      oz1,  -c1o,0,-s1o,  (float)i/segs, 0, 2);
-            vtx(data, ox1, thick,  oz1,  -c1o,0,-s1o,  (float)i/segs, 1, 2);
-            vtx(data, ox2, thick,  oz2,  -c2o,0,-s2o,  (float)(i+1)/segs, 1, 2);
-            vtx(data, ox1, 0,      oz1,  -c1o,0,-s1o,  (float)i/segs, 0, 2);
-            vtx(data, ox2, thick,  oz2,  -c2o,0,-s2o,  (float)(i+1)/segs, 1, 2);
-            vtx(data, ox2, 0,      oz2,  -c2o,0,-s2o,  (float)(i+1)/segs, 0, 2);
+            addQuad(data,
+                outerR*c1, 0, outerR*s1,  -c1,0,-s1,  (float)i/segs, 0,
+                outerR*c2, 0, outerR*s2,  -c2,0,-s2,  (float)(i+1)/segs, 0,
+                outerR*c1, thick, outerR*s1,  -c1,0,-s1,  (float)i/segs, 1,
+                outerR*c2, 0, outerR*s2,  -c2,0,-s2,  (float)(i+1)/segs, 0,
+                outerR*c2, thick, outerR*s2,  -c2,0,-s2,  (float)(i+1)/segs, 1,
+                outerR*c1, thick, outerR*s1,  -c1,0,-s1,  (float)i/segs, 1);
+
             // 光晕
-            float gx1 = innerGlowR * c1i, gz1 = innerGlowR * s1i;
-            float gx2 = innerGlowR * c2i, gz2 = innerGlowR * s2i;
-            float gox1 = (outerR + 0.1f) * c1i, goz1 = (outerR + 0.1f) * s1i;
-            float gox2 = (outerR + 0.1f) * c2i, goz2 = (outerR + 0.1f) * s2i;
-            vtx(data, gx1, thick,         gz1,  0,1,0,  (float)i/segs, 0, 3);
-            vtx(data, gox1, thick+glowOff, goz1,  0,1,0,  (float)i/segs, 1, 3);
-            vtx(data, gox2, thick+glowOff, goz2,  0,1,0,  (float)(i+1)/segs, 1, 3);
-            vtx(data, gx1, thick,         gz1,  0,1,0,  (float)i/segs, 0, 3);
-            vtx(data, gox2, thick+glowOff, goz2,  0,1,0,  (float)(i+1)/segs, 1, 3);
-            vtx(data, gx2, thick,         gz2,  0,1,0,  (float)(i+1)/segs, 0, 3);
+            addQuad(data,
+                innerGlowR*c1, thick, innerGlowR*s1,  0,1,0,  (float)i/segs, 0,
+                innerGlowR*c2, thick, innerGlowR*s2,  0,1,0,  (float)(i+1)/segs, 0,
+                outerGlowR*c2, thick+glowOff, outerGlowR*s2,  0,1,0,  (float)(i+1)/segs, 1,
+                innerGlowR*c1, thick, innerGlowR*s1,  0,1,0,  (float)i/segs, 0,
+                outerGlowR*c2, thick+glowOff, outerGlowR*s2,  0,1,0,  (float)(i+1)/segs, 1,
+                outerGlowR*c1, thick+glowOff, outerGlowR*s1,  0,1,0,  (float)i/segs, 1);
         }
 
-        int vertexCount = data.size / 9;
-        Mesh mesh = new Mesh(true, data.items, 0, vertexCount);
-        mesh.attributes = new VertexAttributes(
-            VertexAttribute.position3,
-            VertexAttribute.normal3,
-            VertexAttribute.texCoords2,
-            new VertexAttribute("a_surface", 1)
-        );
-        return mesh;
+        float[] verts = new float[data.size];
+        System.arraycopy(data.items, 0, verts, 0, data.size);
+        // 9 floats per vertex: pos3 + normal3 + uv2 + surface1
+        return new Mesh(true, verts);
+    }
+
+    private void addQuad(FloatSeq d,
+            float x1,float y1,float z1, float nx1,float ny1,float nz1, float u1,float v1,
+            float x2,float y2,float z2, float nx2,float ny2,float nz2, float u2,float v2,
+            float x3,float y3,float z3, float nx3,float ny3,float nz3, float u3,float v3,
+            float x4,float y4,float z4, float nx4,float ny4,float nz4, float u4,float v4) {
+        vtx(d, x1,y1,z1, nx1,ny1,nz1, u1,v1, 0);
+        vtx(d, x2,y2,z2, nx2,ny2,nz2, u2,v2, 0);
+        vtx(d, x3,y3,z3, nx3,ny3,nz3, u3,v3, 0);
+        vtx(d, x1,y1,z1, nx1,ny1,nz1, u1,v1, 0);
+        vtx(d, x3,y3,z3, nx3,ny3,nz3, u3,v3, 0);
+        vtx(d, x4,y4,z4, nx4,ny4,nz4, u4,v4, 0);
     }
 
     private void vtx(FloatSeq d, float x,float y,float z,
             float nx,float ny,float nz, float u,float v, float surface) {
-        d.add(x,y,z); d.add(nx,ny,nz); d.add(u,v); d.add(surface);
+        d.add(x, y, z);
+        d.add(nx, ny, nz);
+        d.add(u, v);
+        d.add(surface);
     }
 
     @Override
-    public void preRender(PlanetParams params) {
+    public void render(PlanetParams params, Mat3D projection, Mat3D transform) {
         if (shader == null) {
             shader = new Shader(
                 tree.get("shaders/energy-ring.vert"),
                 tree.get("shaders/energy-ring.frag")
             );
         }
-        lightDir.set(planet.position).sub(planet.solarSystem.position).nor();
-        shader.bind();
-        shader.setUniformf("u_time", Time.globalTime / 60f);
-        shader.setUniformf("u_alpha", 0.85f);
-        shader.setUniformf("u_lightdir", lightDir.x, lightDir.y, lightDir.z);
-        shader.setUniformf("u_campos",
-            planet.position.x, planet.position.y, planet.position.z);
-    }
 
-    @Override
-    public void render(PlanetParams params, Mat3D projection, Mat3D transform) {
-        preRender(params);
-        Mesh ring = buildRing();
+        if (mesh == null) {
+            mesh = buildMesh();
+        }
+
+        lightDir.set(planet.position).sub(planet.solarSystem.position).nor();
+
         Gl.depthMask(false);
         Gl.blend(Gl.blendAdd);
         shader.bind();
         shader.setUniformMatrix4("u_proj", projection.val);
         shader.setUniformMatrix4("u_trans", transform.val);
+        shader.setUniformf("u_time", Time.globalTime / 60f);
+        shader.setUniformf("u_alpha", 0.9f);
+        shader.setUniformf("u_lightdir", lightDir.x, lightDir.y, lightDir.z);
+        shader.setUniformf("u_campos",
+            planet.position.x, planet.position.y, planet.position.z);
         shader.apply();
-        ring.render(shader, Gl.triangles);
+        mesh.render(shader, Gl.triangles);
         Gl.blend(Gl.blend);
         Gl.depthMask(true);
-        ring.dispose();
     }
 
     @Override
-    public void dispose() {}
+    public void dispose() {
+        if (mesh != null) mesh.dispose();
+    }
 }
