@@ -32,10 +32,10 @@ public class EnergyRingMesh extends PlanetMesh {
             float a1 = (float)i / segs * (float)(Math.PI * 2);
             float a2 = (float)(i + 1) / segs * (float)(Math.PI * 2);
 
-            float x1 = innerR * StrictMath.cos(a1), z1 = innerR * StrictMath.sin(a1);
-            float x2 = innerR * StrictMath.cos(a2), z2 = innerR * StrictMath.sin(a2);
-            float x3 = outerR * StrictMath.cos(a1), z3 = outerR * StrictMath.sin(a1);
-            float x4 = outerR * StrictMath.cos(a2), z4 = outerR * StrictMath.sin(a2);
+            float x1 = innerR *(float)(float)StrictMath.cos(a1), z1 = innerR *(float)(float)StrictMath.sin(a1);
+            float x2 = innerR *(float)(float)StrictMath.cos(a2), z2 = innerR *(float)(float)StrictMath.sin(a2);
+            float x3 = outerR *(float)(float)StrictMath.cos(a1), z3 = outerR *(float)(float)StrictMath.sin(a1);
+            float x4 = outerR *(float)(float)StrictMath.cos(a2), z4 = outerR *(float)(float)StrictMath.sin(a2);
 
             // 正面
             quad(data, 
@@ -57,31 +57,31 @@ public class EnergyRingMesh extends PlanetMesh {
                 0);
             // 内侧面
             quad(data,
-                x1, 0, z1, StrictMath.cos(a1), 0, StrictMath.sin(a1), (float)i/segs, 0,
-                x1, thick, z1, StrictMath.cos(a1), 0, StrictMath.sin(a1), (float)i/segs, 1,
-                x2, thick, z2, StrictMath.cos(a2), 0, StrictMath.sin(a2), (float)(i+1)/segs, 1,
-                x1, 0, z1, StrictMath.cos(a1), 0, StrictMath.sin(a1), (float)i/segs, 0,
-                x2, thick, z2, StrictMath.cos(a2), 0, StrictMath.sin(a2), (float)(i+1)/segs, 1,
-                x2, 0, z2, StrictMath.cos(a2), 0, StrictMath.sin(a2), (float)(i+1)/segs, 0,
+                x1, 0, z1, (float)StrictMath.cos(a1), 0, (float)StrictMath.sin(a1), (float)i/segs, 0,
+                x1, thick, z1, (float)StrictMath.cos(a1), 0, (float)StrictMath.sin(a1), (float)i/segs, 1,
+                x2, thick, z2, (float)StrictMath.cos(a2), 0, (float)StrictMath.sin(a2), (float)(i+1)/segs, 1,
+                x1, 0, z1, (float)StrictMath.cos(a1), 0, (float)StrictMath.sin(a1), (float)i/segs, 0,
+                x2, thick, z2, (float)StrictMath.cos(a2), 0, (float)StrictMath.sin(a2), (float)(i+1)/segs, 1,
+                x2, 0, z2, (float)StrictMath.cos(a2), 0, (float)StrictMath.sin(a2), (float)(i+1)/segs, 0,
                 1);
             // 外侧面
             quad(data,
-                x3, 0, z3, -StrictMath.cos(a1), 0, -StrictMath.sin(a1), (float)i/segs, 0,
-                x4, 0, z4, -StrictMath.cos(a2), 0, -StrictMath.sin(a2), (float)(i+1)/segs, 0,
-                x3, thick, z3, -StrictMath.cos(a1), 0, -StrictMath.sin(a1), (float)i/segs, 1,
-                x3, thick, z3, -StrictMath.cos(a1), 0, -StrictMath.sin(a1), (float)i/segs, 1,
-                x4, 0, z4, -StrictMath.cos(a2), 0, -StrictMath.sin(a2), (float)(i+1)/segs, 0,
-                x4, thick, z4, -StrictMath.cos(a2), 0, -StrictMath.sin(a2), (float)(i+1)/segs, 1,
+                x3, 0, z3, -(float)StrictMath.cos(a1), 0, -(float)StrictMath.sin(a1), (float)i/segs, 0,
+                x4, 0, z4, -(float)StrictMath.cos(a2), 0, -(float)StrictMath.sin(a2), (float)(i+1)/segs, 0,
+                x3, thick, z3, -(float)StrictMath.cos(a1), 0, -(float)StrictMath.sin(a1), (float)i/segs, 1,
+                x3, thick, z3, -(float)StrictMath.cos(a1), 0, -(float)StrictMath.sin(a1), (float)i/segs, 1,
+                x4, 0, z4, -(float)StrictMath.cos(a2), 0, -(float)StrictMath.sin(a2), (float)(i+1)/segs, 0,
+                x4, thick, z4, -(float)StrictMath.cos(a2), 0, -(float)StrictMath.sin(a2), (float)(i+1)/segs, 1,
                 2);
 
             // 光晕内缘
             quad(data,
-                innerGlowR * StrictMath.cos(a1), thick, innerGlowR * StrictMath.sin(a1), 0, 1, 0, (float)i/segs, 0,
-                innerGlowR * StrictMath.cos(a2), thick, innerGlowR * StrictMath.sin(a2), 0, 1, 0, (float)(i+1)/segs, 0,
-                (outerR + 0.1f) * StrictMath.cos(a2), thick + glowOff, (outerR + 0.1f) * StrictMath.sin(a2), 0, 1, 0, (float)(i+1)/segs, 1,
-                innerGlowR * StrictMath.cos(a1), thick, innerGlowR * StrictMath.sin(a1), 0, 1, 0, (float)i/segs, 0,
-                (outerR + 0.1f) * StrictMath.cos(a2), thick + glowOff, (outerR + 0.1f) * StrictMath.sin(a2), 0, 1, 0, (float)(i+1)/segs, 1,
-                (outerR + 0.1f) * StrictMath.cos(a1), thick + glowOff, (outerR + 0.1f) * StrictMath.sin(a1), 0, 1, 0, (float)i/segs, 1,
+                innerGlowR *(float)(float)StrictMath.cos(a1), thick, innerGlowR *(float)(float)StrictMath.sin(a1), 0, 1, 0, (float)i/segs, 0,
+                innerGlowR *(float)(float)StrictMath.cos(a2), thick, innerGlowR *(float)(float)StrictMath.sin(a2), 0, 1, 0, (float)(i+1)/segs, 0,
+                (outerR + 0.1f) * (float)StrictMath.cos(a2), thick + glowOff, (outerR + 0.1f) * (float)StrictMath.sin(a2), 0, 1, 0, (float)(i+1)/segs, 1,
+                innerGlowR *(float)(float)StrictMath.cos(a1), thick, innerGlowR *(float)(float)StrictMath.sin(a1), 0, 1, 0, (float)i/segs, 0,
+                (outerR + 0.1f) * (float)StrictMath.cos(a2), thick + glowOff, (outerR + 0.1f) * (float)StrictMath.sin(a2), 0, 1, 0, (float)(i+1)/segs, 1,
+                (outerR + 0.1f) * (float)StrictMath.cos(a1), thick + glowOff, (outerR + 0.1f) * (float)StrictMath.sin(a1), 0, 1, 0, (float)i/segs, 1,
                 3);
         }
 
