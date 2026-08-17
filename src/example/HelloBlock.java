@@ -3,9 +3,9 @@ package example;
 import arc.scene.ui.Dialog;
 import mindustry.content.Items;
 import mindustry.gen.Building;
+import mindustry.type.Category;          // ✅ 正确路径
 import mindustry.type.ItemStack;
 import mindustry.world.Block;
-import mindustry.world.meta.Category;
 
 import static mindustry.Vars.*;
 
@@ -20,7 +20,7 @@ public class HelloBlock extends Block {
         solid = true;
         update = true;
         hasPower = false;
-        category = Category.units;
+        category = Category.units;                  // ✅ 使用正确的 Category
         requirements(Category.units, ItemStack.with(Items.copper, 10));
         buildType = HelloBuild::new;
     }
