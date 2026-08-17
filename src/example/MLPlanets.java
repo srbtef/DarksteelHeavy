@@ -30,7 +30,7 @@ public class MLPlanets {
             // 用父类的 noise 方法生成地形高度
             float h = (noise(position.x, position.y, 7, 0.5f, 80) + 1f) / 2f;
 
-            if (h > 0.78f) {
+            if (h > 0.88f) {
                 // 高山区：地面是石头，上面放一层墙（模拟高山）
                 tile.floor = Blocks.stone;
                 tile.block = Blocks.stone;
