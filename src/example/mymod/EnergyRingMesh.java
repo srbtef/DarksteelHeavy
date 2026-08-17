@@ -29,8 +29,8 @@ public class EnergyRingMesh extends PlanetMesh {
         int segs = 120;
 
         for (int i = 0; i < segs; i++) {
-            float a1 = (float)i / segs * Mathf.PI2;
-            float a2 = (float)(i + 1) / segs * Mathf.PI2;
+            float a1 = (float)i / segs * (float)(Math.PI * 2);
+            float a2 = (float)(i + 1) / segs * (float)(Math.PI * 2);
 
             float x1 = innerR * Mathf.cos(a1), z1 = innerR * Mathf.sin(a1);
             float x2 = innerR * Mathf.cos(a2), z2 = innerR * Mathf.sin(a2);
