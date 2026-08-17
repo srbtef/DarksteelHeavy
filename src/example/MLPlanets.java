@@ -1,4 +1,4 @@
-package example.mymod;
+package example;
 
 import arc.func.*;
 import arc.graphics.*;
