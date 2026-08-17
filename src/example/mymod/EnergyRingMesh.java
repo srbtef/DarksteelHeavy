@@ -18,104 +18,86 @@ public class EnergyRingMesh extends PlanetMesh {
     }
 
     private Mesh buildRing() {
-        FloatSeq data = new FloatSeq(6000);
+        FloatSeq data = new FloatSeq(12000);
 
         float innerR = 2.2f, outerR = 2.8f;
-        float innerGlowR = 2.0f, outerGlowR = 3.0f;
         float thick = 0.12f;
         float glowOff = 0.15f;
-        float tilt = 0.5f; // 倾斜角度
-
+        float innerGlowR = 2.0f;
+        float outerGlowR = 3.0f;
         int segs = 120;
 
         for (int i = 0; i < segs; i++) {
             float a1 = (float)i / segs * (float)(Math.PI * 2);
             float a2 = (float)(i + 1) / segs * (float)(Math.PI * 2);
 
-            float x1 = innerR *(float)(float)StrictMath.cos(a1), z1 = innerR *(float)(float)StrictMath.sin(a1);
-            float x2 = innerR *(float)(float)StrictMath.cos(a2), z2 = innerR *(float)(float)StrictMath.sin(a2);
-            float x3 = outerR *(float)(float)StrictMath.cos(a1), z3 = outerR *(float)(float)StrictMath.sin(a1);
-            float x4 = outerR *(float)(float)StrictMath.cos(a2), z4 = outerR *(float)(float)StrictMath.sin(a2);
+            float c1 = (float)StrictMath.cos(a1), s1 = (float)StrictMath.sin(a1);
+            float c2 = (float)StrictMath.cos(a2), s2 = (float)StrictMath.sin(a2);
+            float c1i = c1, s1i = s1;
+            float c2i = c2, s2i = s2;
+            float c1o = c1, s1o = s1;
+            float c2o = c2, s2o = s2;
+
+            float ix1 = innerR * c1i, iz1 = innerR * s1i;
+            float ix2 = innerR * c2i, iz2 = innerR * s2i;
+            float ox1 = outerR * c1o, oz1 = outerR * s1o;
+            float ox2 = outerR * c2o, oz2 = outerR * s2o;
 
             // 正面
-            quad(data, 
-                x1, thick, z1, 0, 1, 0, (float)i/segs, 0,
-                x2, thick, z2, 0, 1, 0, (float)(i+1)/segs, 0,
-                x4, thick, z4, 0, 1, 0, (float)(i+1)/segs, 1,
-                x1, thick, z1, 0, 1, 0, (float)i/segs, 0,
-                x4, thick, z4, 0, 1, 0, (float)(i+1)/segs, 1,
-                x3, thick, z3, 0, 1, 0, (float)i/segs, 1,
-                0);
+            vtx(data, ix1, thick, iz1,  0,1,0,  (float)i/segs, 0, 0);
+            vtx(data, ox1, thick, oz1,  0,1,0,  (float)i/segs, 1, 0);
+            vtx(data, ox2, thick, oz2,  0,1,0,  (float)(i+1)/segs, 1, 0);
+            vtx(data, ix1, thick, iz1,  0,1,0,  (float)i/segs, 0, 0);
+            vtx(data, ox2, thick, oz2,  0,1,0,  (float)(i+1)/segs, 1, 0);
+            vtx(data, ix2, thick, iz2,  0,1,0,  (float)(i+1)/segs, 0, 0);
             // 背面
-            quad(data,
-                x1, 0, z1, 0, -1, 0, (float)i/segs, 0,
-                x3, 0, z3, 0, -1, 0, (float)i/segs, 1,
-                x4, 0, z4, 0, -1, 0, (float)(i+1)/segs, 1,
-                x1, 0, z1, 0, -1, 0, (float)i/segs, 0,
-                x4, 0, z4, 0, -1, 0, (float)(i+1)/segs, 1,
-                x2, 0, z2, 0, -1, 0, (float)(i+1)/segs, 0,
-                0);
+            vtx(data, ix1, 0, iz1,  0,-1,0,  (float)i/segs, 0, 0);
+            vtx(data, ix2, 0, iz2,  0,-1,0,  (float)(i+1)/segs, 0, 0);
+            vtx(data, ox1, 0, oz1,  0,-1,0,  (float)i/segs, 1, 0);
+            vtx(data, ix2, 0, iz2,  0,-1,0,  (float)(i+1)/segs, 0, 0);
+            vtx(data, ox2, 0, oz2,  0,-1,0,  (float)(i+1)/segs, 1, 0);
+            vtx(data, ox1, 0, oz1,  0,-1,0,  (float)i/segs, 1, 0);
             // 内侧面
-            quad(data,
-                x1, 0, z1, (float)StrictMath.cos(a1), 0, (float)StrictMath.sin(a1), (float)i/segs, 0,
-                x1, thick, z1, (float)StrictMath.cos(a1), 0, (float)StrictMath.sin(a1), (float)i/segs, 1,
-                x2, thick, z2, (float)StrictMath.cos(a2), 0, (float)StrictMath.sin(a2), (float)(i+1)/segs, 1,
-                x1, 0, z1, (float)StrictMath.cos(a1), 0, (float)StrictMath.sin(a1), (float)i/segs, 0,
-                x2, thick, z2, (float)StrictMath.cos(a2), 0, (float)StrictMath.sin(a2), (float)(i+1)/segs, 1,
-                x2, 0, z2, (float)StrictMath.cos(a2), 0, (float)StrictMath.sin(a2), (float)(i+1)/segs, 0,
-                1);
+            vtx(data, ix1, 0,      iz1,  c1i,0,s1i,  (float)i/segs, 0, 1);
+            vtx(data, ix2, 0,      iz2,  c2i,0,s2i,  (float)(i+1)/segs, 0, 1);
+            vtx(data, ix1, thick,  iz1,  c1i,0,s1i,  (float)i/segs, 1, 1);
+            vtx(data, ix2, 0,      iz2,  c2i,0,s2i,  (float)(i+1)/segs, 0, 1);
+            vtx(data, ix2, thick,  iz2,  c2i,0,s2i,  (float)(i+1)/segs, 1, 1);
+            vtx(data, ix1, thick,  iz1,  c1i,0,s1i,  (float)i/segs, 1, 1);
             // 外侧面
-            quad(data,
-                x3, 0, z3, -(float)StrictMath.cos(a1), 0, -(float)StrictMath.sin(a1), (float)i/segs, 0,
-                x4, 0, z4, -(float)StrictMath.cos(a2), 0, -(float)StrictMath.sin(a2), (float)(i+1)/segs, 0,
-                x3, thick, z3, -(float)StrictMath.cos(a1), 0, -(float)StrictMath.sin(a1), (float)i/segs, 1,
-                x3, thick, z3, -(float)StrictMath.cos(a1), 0, -(float)StrictMath.sin(a1), (float)i/segs, 1,
-                x4, 0, z4, -(float)StrictMath.cos(a2), 0, -(float)StrictMath.sin(a2), (float)(i+1)/segs, 0,
-                x4, thick, z4, -(float)StrictMath.cos(a2), 0, -(float)StrictMath.sin(a2), (float)(i+1)/segs, 1,
-                2);
-
-            // 光晕内缘
-            quad(data,
-                innerGlowR *(float)(float)StrictMath.cos(a1), thick, innerGlowR *(float)(float)StrictMath.sin(a1), 0, 1, 0, (float)i/segs, 0,
-                innerGlowR *(float)(float)StrictMath.cos(a2), thick, innerGlowR *(float)(float)StrictMath.sin(a2), 0, 1, 0, (float)(i+1)/segs, 0,
-                (outerR + 0.1f) * (float)StrictMath.cos(a2), thick + glowOff, (outerR + 0.1f) * (float)StrictMath.sin(a2), 0, 1, 0, (float)(i+1)/segs, 1,
-                innerGlowR *(float)(float)StrictMath.cos(a1), thick, innerGlowR *(float)(float)StrictMath.sin(a1), 0, 1, 0, (float)i/segs, 0,
-                (outerR + 0.1f) * (float)StrictMath.cos(a2), thick + glowOff, (outerR + 0.1f) * (float)StrictMath.sin(a2), 0, 1, 0, (float)(i+1)/segs, 1,
-                (outerR + 0.1f) * (float)StrictMath.cos(a1), thick + glowOff, (outerR + 0.1f) * (float)StrictMath.sin(a1), 0, 1, 0, (float)i/segs, 1,
-                3);
+            vtx(data, ox1, 0,      oz1,  -c1o,0,-s1o,  (float)i/segs, 0, 2);
+            vtx(data, ox1, thick,  oz1,  -c1o,0,-s1o,  (float)i/segs, 1, 2);
+            vtx(data, ox2, thick,  oz2,  -c2o,0,-s2o,  (float)(i+1)/segs, 1, 2);
+            vtx(data, ox1, 0,      oz1,  -c1o,0,-s1o,  (float)i/segs, 0, 2);
+            vtx(data, ox2, thick,  oz2,  -c2o,0,-s2o,  (float)(i+1)/segs, 1, 2);
+            vtx(data, ox2, 0,      oz2,  -c2o,0,-s2o,  (float)(i+1)/segs, 0, 2);
+            // 光晕
+            float gx1 = innerGlowR * c1i, gz1 = innerGlowR * s1i;
+            float gx2 = innerGlowR * c2i, gz2 = innerGlowR * s2i;
+            float gox1 = (outerR + 0.1f) * c1i, goz1 = (outerR + 0.1f) * s1i;
+            float gox2 = (outerR + 0.1f) * c2i, goz2 = (outerR + 0.1f) * s2i;
+            vtx(data, gx1, thick,         gz1,  0,1,0,  (float)i/segs, 0, 3);
+            vtx(data, gox1, thick+glowOff, goz1,  0,1,0,  (float)i/segs, 1, 3);
+            vtx(data, gox2, thick+glowOff, goz2,  0,1,0,  (float)(i+1)/segs, 1, 3);
+            vtx(data, gx1, thick,         gz1,  0,1,0,  (float)i/segs, 0, 3);
+            vtx(data, gox2, thick+glowOff, goz2,  0,1,0,  (float)(i+1)/segs, 1, 3);
+            vtx(data, gx2, thick,         gz2,  0,1,0,  (float)(i+1)/segs, 0, 3);
         }
 
-        Mesh mesh = new Mesh(true, data.items, 0, data.size);
+        int vertexCount = data.size / 9;
+        Mesh mesh = new Mesh(true, data.items, 0, vertexCount);
         mesh.attributes = new VertexAttributes(
             VertexAttribute.position3,
             VertexAttribute.normal3,
             VertexAttribute.texCoords2,
-            VertexAttribute.aSurface
+            new VertexAttribute("a_surface", 1)
         );
         return mesh;
     }
 
-    /** 添加四边形（2个三角形）: 9个float per vertex */
-    private void quad(FloatSeq data,
-            float x1, float y1, float z1, float nx1, float ny1, float nz1, float u1, float v1,
-            float x2, float y2, float z2, float nx2, float ny2, float nz2, float u2, float v2,
-            float x3, float y3, float z3, float nx3, float ny3, float nz3, float u3, float v3,
-            float x4, float y4, float z4, float nx4, float ny4, float nz4, float u4, float v4,
-            float surface) {
-        vertex(data, x1,y1,z1, nx1,ny1,nz1, u1,v1, surface);
-        vertex(data, x2,y2,z2, nx2,ny2,nz2, u2,v2, surface);
-        vertex(data, x3,y3,z3, nx3,ny3,nz3, u3,v3, surface);
-        vertex(data, x1,y1,z1, nx1,ny1,nz1, u1,v1, surface);
-        vertex(data, x3,y3,z3, nx3,ny3,nz3, u3,v3, surface);
-        vertex(data, x4,y4,z4, nx4,ny4,nz4, u4,v4, surface);
-    }
-
-    private void vertex(FloatSeq data, float x,float y,float z,
+    private void vtx(FloatSeq d, float x,float y,float z,
             float nx,float ny,float nz, float u,float v, float surface) {
-        data.add(x, y, z);
-        data.add(nx, ny, nz);
-        data.add(u, v);
-        data.add(surface);
+        d.add(x,y,z); d.add(nx,ny,nz); d.add(u,v); d.add(surface);
     }
 
     @Override
@@ -131,7 +113,8 @@ public class EnergyRingMesh extends PlanetMesh {
         shader.setUniformf("u_time", Time.globalTime / 60f);
         shader.setUniformf("u_alpha", 0.85f);
         shader.setUniformf("u_lightdir", lightDir.x, lightDir.y, lightDir.z);
-        shader.setUniformf("u_campos", planet.position.x, planet.position.y, planet.position.z);
+        shader.setUniformf("u_campos",
+            planet.position.x, planet.position.y, planet.position.z);
     }
 
     @Override
