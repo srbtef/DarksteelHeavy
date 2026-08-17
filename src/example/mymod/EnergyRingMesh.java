@@ -2,8 +2,10 @@ package example.mymod;
 
 import arc.graphics.*;
 import arc.graphics.gl.*;
+import arc.math.*;
 import arc.math.geom.*;
 import arc.util.*;
+import arc.util.noise.*;
 import mindustry.graphics.g3d.*;
 import mindustry.type.*;
 import mindustry.graphics.*;
@@ -13,224 +15,147 @@ import static mindustry.Vars.*;
 /** 自定义能量星环渲染 */
 public class EnergyRingMesh extends PlanetMesh {
     public Vec3 lightDir = new Vec3();
-    public Mesh ringMesh;
 
     public EnergyRingMesh(Planet planet) {
         this.planet = planet;
-
-        // 创建自定义shader
-        this.shader = new Shader(
-            tree.get("shaders/energy-ring.vert"),
-            tree.get("shaders/energy-ring.frag")
-        );
-
-        // 构建环状mesh
-        this.ringMesh = buildRingMesh();
-    }
-
-    /** 生成星环mesh */
-    private Mesh buildRingMesh() {
-        int ringSegments = 120; // 环的段数（越多越平滑）
-        int widthSegments = 4;  // 宽度分段
-
-        float innerRadius = 2.2f;
-        float outerRadius = 2.8f;
-        float height = 0.15f;
-        float haloHeight = 0.5f;
-
-        int vertCount = (ringSegments * (widthSegments + 1) * 2  // 正面 + 背面
-                       + ringSegments * widthSegments * 2        // 内侧 + 外侧
-                       + ringSegments * 2);                       // 光晕
-
-        float[] vertices = new float[vertCount * 12]; // 12 floats per vertex (pos3+norm3+tex2+surface1)
-        int vi = 0;
-
-        // 生成立面（内侧面 + 外侧面）
-        for (int i = 0; i < ringSegments; i++) {
-            float a1 = (float) i / ringSegments * Mathf.PI * 2;
-            float a2 = (float) (i + 1) / ringSegments * Mathf.PI * 2;
-            float x1 = Mathf.cos(a1), z1 = Mathf.sin(a1);
-            float x2 = Mathf.cos(a2), z2 = Mathf.sin(a2);
-
-            // 内侧面
-            addVertex(vertices, vi,
-                innerRadius * x1, 0, innerRadius * z1,
-                x1, 0, z1,
-                (float) i / ringSegments, 0, 1);
-            vi += 12;
-            addVertex(vertices, vi,
-                innerRadius * x1, height, innerRadius * z1,
-                x1, 0, z1,
-                (float) i / ringSegments, 1, 1);
-            vi += 12;
-            addVertex(vertices, vi,
-                innerRadius * x2, 0, innerRadius * z2,
-                x2, 0, z2,
-                (float) (i + 1) / ringSegments, 0, 1);
-            vi += 12;
-            addVertex(vertices, vi,
-                innerRadius * x1, height, innerRadius * z1,
-                x1, 0, z1,
-                (float) i / ringSegments, 1, 1);
-            vi += 12;
-            addVertex(vertices, vi,
-                innerRadius * x2, height, innerRadius * z2,
-                x2, 0, z2,
-                (float) (i + 1) / ringSegments, 1, 1);
-            vi += 12;
-            addVertex(vertices, vi,
-                innerRadius * x2, 0, innerRadius * z2,
-                x2, 0, z2,
-                (float) (i + 1) / ringSegments, 0, 1);
-            vi += 12;
-
-            // 外侧面
-            addVertex(vertices, vi,
-                outerRadius * x1, 0, outerRadius * z1,
-                -x1, 0, -z1,
-                (float) i / ringSegments, 0, 2);
-            vi += 12;
-            addVertex(vertices, vi,
-                outerRadius * x2, 0, outerRadius * z2,
-                -x2, 0, -z2,
-                (float) (i + 1) / ringSegments, 0, 2);
-            vi += 12;
-            addVertex(vertices, vi,
-                outerRadius * x1, height, outerRadius * z1,
-                -x1, 0, -z1,
-                (float) i / ringSegments, 1, 2);
-            vi += 12;
-            addVertex(vertices, vi,
-                outerRadius * x1, height, outerRadius * z1,
-                -x1, 0, -z1,
-                (float) i / ringSegments, 1, 2);
-            vi += 12;
-            addVertex(vertices, vi,
-                outerRadius * x2, 0, outerRadius * z2,
-                -x2, 0, -z2,
-                (float) (i + 1) / ringSegments, 0, 2);
-            vi += 12;
-            addVertex(vertices, vi,
-                outerRadius * x2, height, outerRadius * z2,
-                -x2, 0, -z2,
-                (float) (i + 1) / ringSegments, 1, 2);
-            vi += 12;
-        }
-
-        // 生成正面和背面
-        for (int side = 0; side < 2; side++) {
-            float ny = side == 0 ? 1 : -1;
-            float vy = side == 0 ? 0.01f : -0.01f;
-            int surfaceType = side == 0 ? 0 : 0; // face
-
-            for (int i = 0; i < ringSegments; i++) {
-                for (int j = 0; j < widthSegments; j++) {
-                    float t1 = (float) j / widthSegments;
-                    float t2 = (float) (j + 1) / widthSegments;
-                    float r1 = innerRadius + (outerRadius - innerRadius) * t1;
-                    float r2 = innerRadius + (outerRadius - innerRadius) * t2;
-
-                    float a1 = (float) i / ringSegments * Mathf.PI * 2;
-                    float a2 = (float) (i + 1) / ringSegments * Mathf.PI * 2;
-                    float x1i = Mathf.cos(a1), z1i = Mathf.sin(a1);
-                    float x2i = Mathf.cos(a2), z2i = Mathf.sin(a2);
-
-                    float x1o = Mathf.cos(a1), z1o = Mathf.sin(a1);
-                    float x2o = Mathf.cos(a2), z2o = Mathf.sin(a2);
-
-                    // 四边形顶点
-                    addVertex(vertices, vi, r1 * x1i, vy, r1 * z1i, 0, ny, 0, (float) i / ringSegments, t1, surfaceType); vi += 12;
-                    addVertex(vertices, vi, r1 * x2i, vy, r1 * z2i, 0, ny, 0, (float) (i+1) / ringSegments, t1, surfaceType); vi += 12;
-                    addVertex(vertices, vi, r2 * x2o, vy, r2 * z2o, 0, ny, 0, (float) (i+1) / ringSegments, t2, surfaceType); vi += 12;
-                    addVertex(vertices, vi, r1 * x1i, vy, r1 * z1i, 0, ny, 0, (float) i / ringSegments, t1, surfaceType); vi += 12;
-                    addVertex(vertices, vi, r2 * x2o, vy, r2 * z2o, 0, ny, 0, (float) (i+1) / ringSegments, t2, surfaceType); vi += 12;
-                    addVertex(vertices, vi, r2 * x1o, vy, r2 * z1o, 0, ny, 0, (float) i / ringSegments, t2, surfaceType); vi += 12;
-                }
-            }
-        }
-
-        // 生成光晕（halo）
-        int haloSegments = 60;
-        for (int i = 0; i < haloSegments; i++) {
-            float a1 = (float) i / haloSegments * Mathf.PI * 2;
-            float a2 = (float) (i + 1) / haloSegments * Mathf.PI * 2;
-            float r1 = innerRadius - 0.1f;
-            float r2 = outerRadius + 0.2f;
-            float h1 = height;
-            float h2 = haloHeight;
-
-            addVertex(vertices, vi, r1 * Mathf.cos(a1), h1, r1 * Mathf.sin(a1), 0, 1, 0, (float) i / haloSegments, 0, 3); vi += 12;
-            addVertex(vertices, vi, r1 * Mathf.cos(a2), h1, r1 * Mathf.sin(a2), 0, 1, 0, (float) (i+1) / haloSegments, 0, 3); vi += 12;
-            addVertex(vertices, vi, r2 * Mathf.cos(a2), h2, r2 * Mathf.sin(a2), 0, 1, 0, (float) (i+1) / haloSegments, 1, 3); vi += 12;
-            addVertex(vertices, vi, r1 * Mathf.cos(a1), h1, r1 * Mathf.sin(a1), 0, 1, 0, (float) i / haloSegments, 0, 3); vi += 12;
-            addVertex(vertices, vi, r2 * Mathf.cos(a2), h2, r2 * Mathf.sin(a2), 0, 1, 0, (float) (i+1) / haloSegments, 1, 3); vi += 12;
-            addVertex(vertices, vi, r2 * Mathf.cos(a1), h2, r2 * Mathf.sin(a1), 0, 1, 0, (float) i / haloSegments, 1, 3); vi += 12;
-        }
-
-        Mesh mesh = new Mesh(false);
-        mesh.getVertices(vertices.length / 12);
-        mesh.setVertices(vertices);
-
-        // 设置顶点属性
-        mesh.attributes = new VertexAttributes(
-            new VertexAttribute("a_position", 3),
-            new VertexAttribute("a_normal", 3),
-            new VertexAttribute("a_texCoord0", 2),
-            new VertexAttribute("a_surface", 1)
-        );
-
-        return mesh;
-    }
-
-    private void addVertex(float[] verts, int idx,
-            float x, float y, float z,
-            float nx, float ny, float nz,
-            float u, float v, float surface) {
-        verts[idx] = x;      verts[idx+1] = y;  verts[idx+2] = z;
-        verts[idx+3] = nx;   verts[idx+4] = ny; verts[idx+5] = nz;
-        verts[idx+6] = u;    verts[idx+7] = v;
-        verts[idx+8] = surface;
+        // shader在render时才创建（延迟初始化）
     }
 
     @Override
     public void preRender(PlanetParams params) {
-        // 计算光照方向
-        Vec3 light = new Vec3(1, 1, 1).nor();
-        Vec3.toRadix52(light);
-        lightDir.set(light);
+        if (shader == null) {
+            shader = new Shader(
+                tree.get("shaders/energy-ring.vert"),
+                tree.get("shaders/energy-ring.frag")
+            );
+        }
+
+        // 光照方向 = 指向太阳
+        Vec3.toRadix52(planet.position);
+        lightDir.set(planet.position).sub(planet.solarSystem.position).nor();
 
         shader.bind();
         shader.setUniformf("u_time", Time.globalTime / 60f);
         shader.setUniformf("u_alpha", 0.85f);
-        shader.setUniformf("u_lightdir", light.x, light.y, light.z);
+        shader.setUniformf("u_lightdir", lightDir.x, lightDir.y, lightDir.z);
         shader.setUniformf("u_campos",
-            planet.position.x,
-            planet.position.y,
-            planet.position.z);
+            planet.position.x, planet.position.y, planet.position.z);
     }
 
     @Override
     public void render(PlanetParams params, Mat3D projection, Mat3D transform) {
-        // 先渲染星球mesh
-        super.render(params, projection, transform);
+        preRender(params);
 
-        // 再渲染星环
-        if (ringMesh != null && !ringMesh.isDisposed()) {
-            preRender(params);
-            shader.bind();
-            shader.setUniformMatrix4("u_proj", projection.val);
-            shader.setUniformMatrix4("u_trans", transform.val);
-            shader.apply();
-            Gl.depthMask(false);
-            Gl.blend(Gl.blendAdd);
-            ringMesh.render(shader, Gl.triangles);
-            Gl.blend(Gl.blend);
-            Gl.depthMask(true);
-        }
+        // 构建并渲染环状mesh
+        Mesh ring = buildRingMesh();
+        Gl.depthMask(false);
+        Gl.blend(Gl.blendAdd);
+
+        shader.bind();
+        shader.setUniformMatrix4("u_proj", projection.val);
+        shader.setUniformMatrix4("u_trans", transform.val);
+        shader.apply();
+        ring.render(shader, Gl.triangles);
+
+        Gl.blend(Gl.blend);
+        Gl.depthMask(true);
+        ring.dispose();
     }
 
-    @Override
-    public void dispose() {
-        if (ringMesh != null) ringMesh.dispose();
+    private Mesh buildRingMesh() {
+        int ringSeg = 120;
+        int widthSeg = 4;
+        float innerR = 2.2f, outerR = 2.8f, height = 0.15f;
+
+        int faceVerts = (ringSeg * widthSeg * 4) + (ringSeg * widthSeg * 2); // front + back quads
+        int sideVerts = ringSeg * 12; // inner + outer sides
+        int haloVerts = ringSeg * 6;
+        int totalVerts = faceVerts + sideVerts + haloVerts;
+
+        float[] vertices = new float[totalVerts * 8]; // pos3 + normal3 + uv2
+        int vi = 0;
+
+        // --- 正面 ---
+        for (int i = 0; i < ringSeg; i++) {
+            for (int j = 0; j < widthSeg; j++) {
+                float t1 = (float)j / widthSeg;
+                float t2 = (float)(j+1) / widthSeg;
+                float r1 = innerR + (outerR - innerR) * t1;
+                float r2 = innerR + (outerR - innerR) * t2;
+                float a1 = (float)i / ringSeg * Mathf.PI2;
+                float a2 = (float)(i+1) / ringSeg * Mathf.PI2;
+
+                // quad: v0, v1, v2, v0, v2, v3
+                addV(vertices, vi, r1*Mathf.cos(a1), 0.01f, r1*Mathf.sin(a1), 0,1,0, (float)i/ringSeg, t1); vi+=8;
+                addV(vertices, vi, r1*Mathf.cos(a2), 0.01f, r1*Mathf.sin(a2), 0,1,0, (float)(i+1)/ringSeg, t1); vi+=8;
+                addV(vertices, vi, r2*Mathf.cos(a2), 0.01f, r2*Mathf.sin(a2), 0,1,0, (float)(i+1)/ringSeg, t2); vi+=8;
+                addV(vertices, vi, r1*Mathf.cos(a1), 0.01f, r1*Mathf.sin(a1), 0,1,0, (float)i/ringSeg, t1); vi+=8;
+                addV(vertices, vi, r2*Mathf.cos(a2), 0.01f, r2*Mathf.sin(a2), 0,1,0, (float)(i+1)/ringSeg, t2); vi+=8;
+                addV(vertices, vi, r2*Mathf.cos(a1), 0.01f, r2*Mathf.sin(a1), 0,1,0, (float)i/ringSeg, t2); vi+=8;
+            }
+        }
+
+        // --- 背面 ---
+        for (int i = 0; i < ringSeg; i++) {
+            for (int j = 0; j < widthSeg; j++) {
+                float t1 = (float)j / widthSeg;
+                float t2 = (float)(j+1) / widthSeg;
+                float r1 = innerR + (outerR - innerR) * t1;
+                float r2 = innerR + (outerR - innerR) * t2;
+                float a1 = (float)i / ringSeg * Mathf.PI2;
+                float a2 = (float)(i+1) / ringSeg * Mathf.PI2;
+
+                addV(vertices, vi, r1*Mathf.cos(a1), -0.01f, r1*Mathf.sin(a1), 0,-1,0, (float)i/ringSeg, t1); vi+=8;
+                addV(vertices, vi, r2*Mathf.cos(a1), -0.01f, r2*Mathf.sin(a1), 0,-1,0, (float)i/ringSeg, t2); vi+=8;
+                addV(vertices, vi, r1*Mathf.cos(a2), -0.01f, r1*Mathf.sin(a2), 0,-1,0, (float)(i+1)/ringSeg, t1); vi+=8;
+                addV(vertices, vi, r1*Mathf.cos(a2), -0.01f, r1*Mathf.sin(a2), 0,-1,0, (float)(i+1)/ringSeg, t1); vi+=8;
+                addV(vertices, vi, r2*Mathf.cos(a1), -0.01f, r2*Mathf.sin(a1), 0,-1,0, (float)i/ringSeg, t2); vi+=8;
+                addV(vertices, vi, r2*Mathf.cos(a2), -0.01f, r2*Mathf.sin(a2), 0,-1,0, (float)(i+1)/ringSeg, t2); vi+=8;
+            }
+        }
+
+        // --- 内侧面 ---
+        for (int i = 0; i < ringSeg; i++) {
+            float a1 = (float)i / ringSeg * Mathf.PI2;
+            float a2 = (float)(i+1) / ringSeg * Mathf.PI2;
+            addV(vertices, vi, innerR*Mathf.cos(a1), 0,       innerR*Mathf.sin(a1), Mathf.cos(a1),0,Mathf.sin(a1), (float)i/ringSeg, 0); vi+=8;
+            addV(vertices, vi, innerR*Mathf.cos(a2), 0,       innerR*Mathf.sin(a2), Mathf.cos(a2),0,Mathf.sin(a2), (float)(i+1)/ringSeg, 0); vi+=8;
+            addV(vertices, vi, innerR*Mathf.cos(a1), height, innerR*Mathf.sin(a1), Mathf.cos(a1),0,Mathf.sin(a1), (float)i/ringSeg, 1); vi+=8;
+            addV(vertices, vi, innerR*Mathf.cos(a2), 0,       innerR*Mathf.sin(a2), Mathf.cos(a2),0,Mathf.sin(a2), (float)(i+1)/ringSeg, 0); vi+=8;
+            addV(vertices, vi, innerR*Mathf.cos(a2), height, innerR*Mathf.sin(a2), Mathf.cos(a2),0,Mathf.sin(a2), (float)(i+1)/ringSeg, 1); vi+=8;
+            addV(vertices, vi, innerR*Mathf.cos(a1), height, innerR*Mathf.sin(a1), Mathf.cos(a1),0,Mathf.sin(a1), (float)i/ringSeg, 1); vi+=8;
+
+            addV(vertices, vi, outerR*Mathf.cos(a1), 0,       outerR*Mathf.sin(a1), -Mathf.cos(a1),0,-Mathf.sin(a1), (float)i/ringSeg, 0); vi+=8;
+            addV(vertices, vi, outerR*Mathf.cos(a1), height, outerR*Mathf.sin(a1), -Mathf.cos(a1),0,-Mathf.sin(a1), (float)i/ringSeg, 1); vi+=8;
+            addV(vertices, vi, outerR*Mathf.cos(a2), 0,       outerR*Mathf.sin(a2), -Mathf.cos(a2),0,-Mathf.sin(a2), (float)(i+1)/ringSeg, 0); vi+=8;
+            addV(vertices, vi, outerR*Mathf.cos(a1), height, outerR*Mathf.sin(a1), -Mathf.cos(a1),0,-Mathf.sin(a1), (float)i/ringSeg, 1); vi+=8;
+            addV(vertices, vi, outerR*Mathf.cos(a2), height, outerR*Mathf.sin(a2), -Mathf.cos(a2),0,-Mathf.sin(a2), (float)(i+1)/ringSeg, 1); vi+=8;
+            addV(vertices, vi, outerR*Mathf.cos(a2), 0,       outerR*Mathf.sin(a2), -Mathf.cos(a2),0,-Mathf.sin(a2), (float)(i+1)/ringSeg, 0); vi+=8;
+        }
+
+        // --- 光晕 ---
+        float haloH = 0.5f;
+        for (int i = 0; i < ringSeg; i++) {
+            float a1 = (float)i / ringSeg * Mathf.PI2;
+            float a2 = (float)(i+1) / ringSeg * Mathf.PI2;
+            addV(vertices, vi, (innerR-0.1f)*Mathf.cos(a1), height, (innerR-0.1f)*Mathf.sin(a1), 0,1,0, (float)i/ringSeg, 0); vi+=8;
+            addV(vertices, vi, (outerR+0.2f)*Mathf.cos(a2), haloH,  (outerR+0.2f)*Mathf.sin(a2), 0,1,0, (float)(i+1)/ringSeg, 1); vi+=8;
+            addV(vertices, vi, (innerR-0.1f)*Mathf.cos(a2), height, (innerR-0.1f)*Mathf.sin(a2), 0,1,0, (float)(i+1)/ringSeg, 0); vi+=8;
+            addV(vertices, vi, (innerR-0.1f)*Mathf.cos(a1), height, (innerR-0.1f)*Mathf.sin(a1), 0,1,0, (float)i/ringSeg, 0); vi+=8;
+            addV(vertices, vi, (outerR+0.2f)*Mathf.cos(a2), haloH,  (outerR+0.2f)*Mathf.sin(a2), 0,1,0, (float)(i+1)/ringSeg, 1); vi+=8;
+            addV(vertices, vi, (outerR+0.2f)*Mathf.cos(a1), haloH,  (outerR+0.2f)*Mathf.sin(a1), 0,1,0, (float)i/ringSeg, 1); vi+=8;
+        }
+
+        float[] finalVerts = new float[vi];
+        System.arraycopy(vertices, 0, finalVerts, 0, vi);
+        return new Mesh(true, finalVerts, new VertexAttributes(
+            VertexAttribute.position3,
+            VertexAttribute.normal3,
+            VertexAttribute.texCoords2
+        ));
+    }
+
+    private void addV(float[] v, int i, float x,float y,float z, float nx,float ny,float nz, float u,float v2) {
+        v[i]=x; v[i+1]=y; v[i+2]=z; v[i+3]=nx; v[i+4]=ny; v[i+5]=nz; v[i+6]=u; v[i+7]=v2;
     }
 }
