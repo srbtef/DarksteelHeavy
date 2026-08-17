@@ -7,6 +7,8 @@ import mindustry.content.*;
 import mindustry.game.EventType.*;
 import mindustry.mod.*;
 import mindustry.ui.dialogs.*;
+import example.HelloBlock;
+import example.SimpleCore;
 
 public class MyMod extends Mod {
 
@@ -17,7 +19,6 @@ public class MyMod extends Mod {
     @Override
     public void loadContent() {
         Log.info("Loading content.");
-        // 注册方块（mindustry 会自动注册）
         new HelloBlock();
         new SimpleCore();
     }
