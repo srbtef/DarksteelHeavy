@@ -19,5 +19,6 @@ public class MyMod extends Mod {
     public void loadContent() {
         Log.info("Loading content.");
         new SimpleCore();
+        MLPlanets.load();
     }
 }
