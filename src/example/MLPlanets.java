@@ -31,20 +31,20 @@ public class MLPlanets {
             float h = (noise(position.x, position.y, 7, 0.5f, 80) + 1f) / 2f;
 
             if (h > 0.78f) {
-                // 高山
-                tile.block = Blocks.wall;
+                // 高山区：地面是石头，上面放一层墙（模拟高山）
                 tile.floor = Blocks.stone;
+                tile.block = Blocks.stone;
             } else if (h > 0.60f) {
-                // 岩石
+                // 岩石区
                 tile.floor = Blocks.stone;
             } else if (h > 0.42f) {
-                // 沙地
+                // 沙地区
                 tile.floor = Blocks.sand;
             } else if (h > 0.28f) {
-                // 普通岩石
+                // 冰区
                 tile.floor = Blocks.ice;
             } else {
-                // 地面/冰
+                // 低地冰区
                 tile.floor = Blocks.ice;
             }
         }
