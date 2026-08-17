@@ -1,5 +1,6 @@
 package example;
 
+import arc.struct.ObjectSet;
 import mindustry.content.Items;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
@@ -15,7 +16,7 @@ public class SimpleCore extends CoreBlock {
         size = 2;
         health = 1000;
         solid = true;
-        flags.add(BlockFlag.core);
+        flags = ObjectSet.with(BlockFlag.core);
         category = Category.effect;
         requirements(Category.effect, ItemStack.with(
             Items.copper, 100,
@@ -26,6 +27,5 @@ public class SimpleCore extends CoreBlock {
     }
 
     public class SimpleCoreBuild extends CoreBuild {
-        // 核心激活时的逻辑可以写在这里
     }
 }
