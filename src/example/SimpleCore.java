@@ -1,6 +1,6 @@
 package example;
 
-import java.util.EnumSet;
+import arc.struct.EnumSet;
 import mindustry.content.Items;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
