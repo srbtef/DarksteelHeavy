@@ -31,25 +31,19 @@ public class MLPlanets {
             // 噪声地形高度 (0~1)
             float h = (noise(position.x, position.y, 7, 0.5f, 80) + 1f) / 2f;
 
-            // 根据高度分层
             if (h > 0.76f) {
-                // 高山区：石头地面 + 高山方块
                 tile.floor = Blocks.stone;
                 tile.block = Blocks.stone;
             } else if (h > 0.60f) {
-                // 岩石区：石头地面
                 tile.floor = Blocks.stone;
                 tile.block = Blocks.air;
             } else if (h > 0.45f) {
-                // 沙地区
                 tile.floor = Blocks.sand;
                 tile.block = Blocks.air;
             } else if (h > 0.30f) {
-                // 冰区
                 tile.floor = Blocks.ice;
                 tile.block = Blocks.air;
             } else {
-                // 深冰
                 tile.floor = Blocks.ice;
                 tile.block = Blocks.air;
             }
@@ -64,6 +58,9 @@ public class MLPlanets {
                     new HexSkyMesh(this, 2, 0.15f, 0.14f, 5, Color.valueOf("97B5EDFF").a(0.75f), 2, 0.42f, 1f, 0.43f),
                     new HexSkyMesh(this, 3, 0.6f, 0.15f, 5, Color.valueOf("97B5EDFF").a(0.75f), 2, 0.42f, 1.2f, 0.45f)
             );
+
+            // 添加星环！
+            addMesh(new EnergyRingMesh(this));
 
             launchCapacityMultiplier = 0f;
             sectorSeed = 1;
