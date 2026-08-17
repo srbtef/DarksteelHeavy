@@ -38,7 +38,7 @@ public class EnergyRingMesh extends PlanetMesh {
         }
 
         Gl.depthMask(false);
-        Gl.blend(Gl.blendAdd);
+        Blending.additive.apply();
         shader.bind();
         shader.setUniformMatrix4("u_proj", projection.val);
         shader.setUniformMatrix4("u_trans", transform.val);
@@ -48,8 +48,8 @@ public class EnergyRingMesh extends PlanetMesh {
         shader.setUniformf("u_campos",
             planet.position.x, planet.position.y, planet.position.z);
         shader.apply();
-        mesh.render(shader, Gl.triangles);
-        Gl.blend(Gl.blend);
+        mesh.render(shader, 4);
+        Blending.normal.apply();
         Gl.depthMask(true);
     }
 
