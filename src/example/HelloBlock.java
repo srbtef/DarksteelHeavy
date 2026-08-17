@@ -3,11 +3,9 @@ package example;
 import arc.scene.ui.Dialog;
 import mindustry.content.Items;
 import mindustry.gen.Building;
-import mindustry.type.Category;          // ✅ 正确路径
+import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.world.Block;
-
-import static mindustry.Vars.*;
 
 public class HelloBlock extends Block {
 
@@ -20,7 +18,7 @@ public class HelloBlock extends Block {
         solid = true;
         update = true;
         hasPower = false;
-        category = Category.units;                  // ✅ 使用正确的 Category
+        category = Category.units;
         requirements(Category.units, ItemStack.with(Items.copper, 10));
         buildType = HelloBuild::new;
     }
@@ -28,18 +26,10 @@ public class HelloBlock extends Block {
     public class HelloBuild extends Building {
         @Override
         public void tapped() {
-            showHelloDialog();
+            Dialog dialog = new Dialog("你好");
+            dialog.cont.add("你好，世界！").pad(20f);
+            dialog.addCloseButton();
+            dialog.show();
         }
-    }
-
-    private void showHelloDialog() {
-        Dialog dialog = new Dialog("你好");
-        dialog.cont.add("你好，世界！").pad(20f);
-        dialog.addCloseButton();
-        dialog.show();
-    }
-
-    public void load() {
-        content.blocks().add(this);
     }
 }
