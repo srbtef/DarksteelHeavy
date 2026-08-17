@@ -23,42 +23,34 @@ import static mindustry.Vars.*;
 public class MLPlanets {
     public static Planet cecilia;
 
-    /** 自定义高山地形生成器 */
+    /** 自定义高山星球生成器 */
     public static class CeciliaGenerator extends PlanetGenerator {
-        public float[] generateHeight(Watermap world) {
-            int width = world.width, height = world.height;
-            float[] h = new float[width * height];
-
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    float dx = (float)x / width - 0.5f;
-                    float dy = (float)y / height - 0.5f;
-                    float base = (float)Math.sqrt(dx * dx + dy * dy);
-                    // 中央为高山，往外逐渐降低
-                    float mountain = 1.2f - base * 3.5f;
-                    // 用噪声增加细节
-                    float noise = (float)OctaveGenerator(3, 0.45f).getFloat(x * 0.03f, y * 0.03f);
-                    h[y * width + x] = Math.max(0f, mountain + noise * 0.4f);
-                }
-            }
-            return h;
-        }
-
         @Override
-        public void generateTile(Sector sector, TileGen tile, float[] height, int x, int y) {
-            float h = height[y * sector.tileWidth + x];
-            tile.height = h;
+        protected void genTile(Vec3 position, TileGen tile) {
+            // 使用噪声生成地形高度
+            float noise = noise(position.x, position.y, 8, 0.5, 110);
+            float h = (float)(Simplex.noise3d(
+                (long)(seed + 1), 8, 0.5, 1f / 110,
+                position.x, position.y, position.z
+            ) + 1) / 2f;
 
-            if (h > 0.82f) {
-                tile.block = Blocks.mountain; // 高山
-            } else if (h > 0.65f) {
-                tile.block = Blocks.stone;    // 岩石
-            } else if (h > 0.45f) {
-                tile.block = Blocks.roughRocks; // 粗糙岩石
-            } else if (h > 0.25f) {
-                tile.block = Blocks.rock;     // 普通石头
+            if (h > 0.78f) {
+                // 高山
+                tile.floor = Blocks.peak1;
+                tile.block = Blocks.peak1;
+            } else if (h > 0.62f) {
+                // 岩石
+                tile.floor = Blocks.stone;
+                tile.block = Blocks.stone;
+            } else if (h > 0.48f) {
+                // 粗糙岩石
+                tile.floor = Blocks.roughRocks;
+            } else if (h > 0.32f) {
+                // 普通岩石
+                tile.floor = Blocks.rock;
             } else {
-                tile.block = Blocks.floor1;   // 地面
+                // 地面
+                tile.floor = Blocks.floor1;
             }
         }
     }
