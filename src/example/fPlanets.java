@@ -8,9 +8,14 @@ import mindustry.game.Team;
 import mindustry.graphics.g3d.HexMesh;
 import mindustry.graphics.g3d.HexSkyMesh;
 import mindustry.graphics.g3d.MultiMesh;
-import FusionPlanet.content.FusionPlanetGenerator;
+import example.FusionPlanetGenerator;
 import mindustry.type.Planet;
 import mindustry.world.meta.Env;
+import arc.graphics.Color;
+import mindustry.content.Blocks;
+import mindustry.game.Team;
+import mindustry.content.Planets;
+
 
 public class fPlanets {
     public static Planet fusionPlanet;
