@@ -3,6 +3,13 @@ package example;
 import mindustry.mod.Mod;
 import example.MLPlanets;
 import example.ExampleCoreBlock;
+import arc.util.Log;
+import mindustry.content.Items;
+import mindustry.type.Category;
+import mindustry.type.ItemStack;
+import mindustry.world.meta.BuildVisibility;
+
+import static mindustry.Vars.content;
 
 public class MyMod extends Mod{
  @Override
