@@ -8,6 +8,5 @@ public class MyMod extends Mod{
     @Override
     public void loadContent() {
         fPlanets.load();
-        SimpleCore.load();
     }
 }
