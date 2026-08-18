@@ -2,7 +2,6 @@ package example;
 
 import mindustry.mod.Mod;
 import example.MLPlanets;
-import example.ExampleCoreBlock;
 import arc.util.Log;
 import mindustry.content.Items;
 import mindustry.type.Category;
