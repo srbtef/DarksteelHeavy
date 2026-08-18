@@ -7,7 +7,7 @@ import example.SimpleCore
 public class MyMod extends Mod{
     @Override
     public void loadContent() {
-        MLPlanets.load();
+        fPlanets.load();
         SimpleCore.load();
     }
 }
