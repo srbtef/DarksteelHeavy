@@ -2,7 +2,7 @@ package example;
 
 import mindustry.mod.Mod;
 import example.fPlanets;
-import example.SimpleCore
+import example.SimpleCore;
 
 public class MyMod extends Mod{
     @Override
