@@ -1,397 +1,593 @@
-package mindustry.maps.planet;
+package FusionPlanet.content;
 
-import arc.graphics.*;
-import arc.math.*;
-import arc.math.geom.*;
-import arc.util.*;
-import arc.util.noise.*;
-import mindustry.ai.*;
-import mindustry.content.*;
-import mindustry.game.*;
-import mindustry.maps.generators.*;
-import mindustry.type.*;
-import mindustry.world.*;
-import mindustry.world.blocks.environment.*;
-import mindustry.world.meta.*;
+import arc.graphics.Color;
+import arc.math.Angles; 
+import arc.math.Mathf;
+import arc.math.geom.Geometry;
+import arc.math.geom.Vec2;
+import arc.math.geom.Vec3;
+import arc.struct.ObjectMap;
+import arc.struct.Seq;
+import arc.util.noise.Ridged;
+import arc.util.noise.Simplex;
+import mindustry.content.Blocks;
+import mindustry.content.Planets;
+import mindustry.game.Team;
+import mindustry.maps.generators.PlanetGenerator;
+import mindustry.world.Block;
+import mindustry.world.Tile;
+import mindustry.world.TileGen;
+import arc.math.Rand;
+import arc.struct.FloatSeq;
+import arc.util.Log;
+import mindustry.game.Schematics;
+import mindustry.maps.generators.BaseGenerator;
+import mindustry.game.Waves;
+import mindustry.type.Sector;
+import mindustry.world.Tiles;
+import mindustry.world.meta.Env;
+import mindustry.world.blocks.environment.Floor;
+
 import static mindustry.Vars.*;
 
-/**
- * Erekir星球生成器【已移除全部蒸汽喷口】：厄雷基尔高温岩石星球
- * 负责星球每个区块sector的地形、地板、墙体、矿石、路径、装饰物、游戏规则生成
- * 继承PlanetGenerator星球生成器基类
- */
-public class ErekirPlanetGenerator extends PlanetGenerator{
-    // ========== 高度噪声参数，控制星球地表起伏 ==========
-    public float heightScl = 0.9f;    //高度噪声缩放，越小地形变化越剧烈
-    public float octaves = 8;          //噪声八度，数值越高地形细节越多
-    public float persistence = 0.7f;   //噪声持续度，控制高频噪声权重
-    public float heightPow = 3f;       //高度幂次，放大高低差，让高山更高洼地更低
-    public float heightMult = 1.6f;    //高度整体乘数
+public class FusionPlanetGenerator extends PlanetGenerator {
 
-    // ========== Arkyic(阿基石/绿晶岩)相关静态噪声参数 ==========
-    //TODO 待优化：可以内联或者删除这些常量
-    public static float arkThresh = 0.28f;  //阿基石噪声阈值，大于该值生成阿基岩
-    public static float arkScl = 0.83f;     //阿基石噪声缩放
-    public static int arkSeed = 7;          //阿基石独立随机种子
-    public static int arkOct = 2;           //阿基石噪声八度
+    private static final Block[][] serpuloArr = {
+            {Blocks.water, Blocks.darksandWater, Blocks.darksand, Blocks.darksand, Blocks.darksand, Blocks.darksand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.darksandTaintedWater, Blocks.stone, Blocks.stone},
+            {Blocks.water, Blocks.darksandWater, Blocks.darksand, Blocks.darksand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.darksandTaintedWater, Blocks.stone, Blocks.stone, Blocks.stone},
+            {Blocks.water, Blocks.darksandWater, Blocks.darksand, Blocks.sand, Blocks.salt, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.darksandTaintedWater, Blocks.stone, Blocks.stone, Blocks.stone},
+            {Blocks.water, Blocks.sandWater, Blocks.sand, Blocks.salt, Blocks.salt, Blocks.salt, Blocks.sand, Blocks.stone, Blocks.stone, Blocks.stone, Blocks.snow, Blocks.iceSnow, Blocks.ice},
+            {Blocks.deepwater, Blocks.water, Blocks.sandWater, Blocks.sand, Blocks.salt, Blocks.sand, Blocks.sand, Blocks.basalt, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice},
+            {Blocks.deepwater, Blocks.water, Blocks.sandWater, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.moss, Blocks.iceSnow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.snow, Blocks.ice},
+            {Blocks.deepwater, Blocks.sandWater, Blocks.sand, Blocks.sand, Blocks.moss, Blocks.moss, Blocks.snow, Blocks.basalt, Blocks.basalt, Blocks.basalt, Blocks.ice, Blocks.snow, Blocks.ice},
+            {Blocks.deepTaintedWater, Blocks.darksandTaintedWater, Blocks.darksand, Blocks.darksand, Blocks.basalt, Blocks.moss, Blocks.basalt, Blocks.hotrock, Blocks.basalt, Blocks.ice, Blocks.snow, Blocks.ice, Blocks.ice},
+            {Blocks.darksandWater, Blocks.darksand, Blocks.darksand, Blocks.darksand, Blocks.moss, Blocks.moss, Blocks.snow, Blocks.basalt, Blocks.basalt, Blocks.ice, Blocks.snow, Blocks.ice, Blocks.ice},
+            {Blocks.darksandWater, Blocks.darksand, Blocks.darksand, Blocks.moss, Blocks.ice, Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice},
+            {Blocks.deepTaintedWater, Blocks.darksandTaintedWater, Blocks.darksand, Blocks.moss, Blocks.moss, Blocks.ice, Blocks.ice, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice},
+            {Blocks.taintedWater, Blocks.darksandTaintedWater, Blocks.darksand, Blocks.moss, Blocks.moss, Blocks.moss, Blocks.iceSnow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice},
+            {Blocks.darksandWater, Blocks.darksand, Blocks.snow, Blocks.ice, Blocks.iceSnow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice}
+    };
 
-    // ========== 液体/阿基石地板参数 ==========
-    public static float liqThresh = 0.64f;  //阿基石液态地板噪声阈值
-    public static float liqScl = 87f;       //液态阿基石噪声缩放
-    public static float redThresh = 3.1f;   //红石高温阈值，温度超过该值生成redStone红石
-    public static float noArkThresh = 0.3f;  //抑制阿基石的温度偏移阈值
+    private static final Block[] erekirTerrain = {
+            Blocks.regolith,
+            Blocks.regolith,
+            Blocks.regolith,
+            Blocks.regolith,
+            Blocks.yellowStone,
+            Blocks.rhyolite,
+            Blocks.rhyolite,
+            Blocks.carbonStone
+    };
 
-    // ========== 晶体石头参数 ==========
-    public static int crystalSeed = 8;       //晶体独立种子
-    public static int crystalOct = 2;        //晶体噪声八度
-    public static float crystalScl = 0.9f;   //晶体噪声缩放
-    public static float crystalMag = 0.3f;   //晶体噪声强度
+    private final ObjectMap<Block, Block> decMap = new ObjectMap<>();
 
-    // ========== 空气/镂空墙体噪声参数 ==========
-    public static float airThresh = 0.13f;   //镂空墙体阈值，超过则墙体变成空气
-    public static float airScl = 14;          //镂空噪声缩放
+    public float heightScl = 0.9f;
+    public int octaves = 8;
+    public float persistence = 0.7f;
+    public float heightPow = 4f;
+    public float heightMult = 0.8f;
+    public float scl = 5f;
 
-    /**
-     * 基础地形地板数组，根据rawHeight原始高度采样索引
-     * regolith浮土，yellowStone黄石，rhyolite流纹岩，carbonStone碳石
-     */
-    Block[] terrain = {Blocks.regolith, Blocks.regolith, Blocks.regolith, Blocks.regolith, Blocks.yellowStone, Blocks.rhyolite, Blocks.rhyolite, Blocks.carbonStone};
+    public float arkThresh = 0.28f;
+    public float arkScl = 0.83f;
+    public int arkSeed = 7;
+    public int arkOct = 2;
+    public float redThresh = 3.1f;
+    public float noArkThresh = 0.3f;
+    public int crystalSeed = 8;
+    public int crystalOct = 2;
+    public float crystalScl = 0.9f;
+    public float crystalMag = 0.3f;
 
-    {
-        baseSeed = 2;                          //该星球基础随机种子
-        defaultLoadout = Loadouts.basicBastion;//进入该星球默认开局装备：堡垒基础套装
+    public float iceHeightScale = 1.0f;
+    public float darksandMin = -0.4f;
+    public float darksandMax = 0.2f;
+    public float erekirHeightOffset = 0.1f;
+    public float erekirHeightScale = 1.2f;
+
+    public int mixSeed = 9999;
+    public int mixOctaves = 4;
+    public float mixFreq = 0.25f;
+    public float mixThreshold = 0.7f;
+    public Vec3 basePos = new Vec3(0.9341721f, 0f, 0.3568221f);
+
+    private final BaseGenerator basegen = new BaseGenerator();
+
+    public FusionPlanetGenerator() {
+        decMap.put(Blocks.moss, Blocks.sporeCluster);
+        decMap.put(Blocks.taintedWater, Blocks.water);
+        decMap.put(Blocks.darksandTaintedWater, Blocks.darksandWater);
     }
 
-    /**
-     * 生成一个星球区块sector，这里目前留空，不在此生成AI基地
-     * @param sector 需要生成的区块
-     */
-    @Override
-    public void generateSector(Sector sector){
-        //no bases right now 暂时不在这生成敌方基地
+    private float rawHeight(Vec3 pos) {
+        float h = Simplex.noise3d(seed, octaves, persistence, 1f / heightScl,
+                10f + pos.x, 10f + pos.y, 10f + pos.z);
+        float val = (h * 1.4f) * 0.5f + 0.5f;
+        return Mathf.clamp(val);
     }
 
-    /**
-     * 获取星球球体上某三维坐标的地表高度
-     * @param position 星球表面三维坐标Vec3
-     * @return 经过幂运算和乘数处理后的最终高度
-     */
-    @Override
-    public float getHeight(Vec3 position){
-        //原始高度做pow幂次放大，再乘以高度系数
-        return Mathf.pow(rawHeight(position), heightPow) * heightMult;
+    private float rawTemp(Vec3 pos) {
+        float temp = pos.dst(0, 0, 1f) * 2.2f
+                - Simplex.noise3d(seed, 8, 0.54f, 1.4f, 10f + pos.x, 10f + pos.y, 10f + pos.z) * 2.9f;
+        return temp - 0.1f;
     }
 
-    /**
-     * 获取星球球体上坐标对应的地表颜色，用于星球大地图预览渲染
-     * @param position 星球三维坐标
-     * @return 渲染用Color
-     */
-    @Override
-    public Color getColor(Vec3 position){
-        Block block = getBlock(position);
-        //晶体石头强制替换为晶体地板颜色，让星球预览晶体效果更明显
-        if(block == Blocks.crystallineStone) block = Blocks.crystalFloor;
-        //TODO 这个颜色可能太绿了，暂时注释
-        //if(block == Blocks.beryllicStone) block = Blocks.arkyicStone;
-        //取方块地图颜色，albedo反照率做透明度修正
-        return Tmp.c1.set(block.mapColor).a(1f - block.albedo);
-    }
+    private Block getSerpuloBlock(Vec3 pos) {
+        float h = rawHeight(pos);
+        float px = pos.x * scl;
+        float py = pos.y * scl;
+        float pz = pos.z * scl;
+        float rad = scl;
 
-    /**
-     * 获取星球区块尺寸缩放系数，控制sector地图实际大小
-     * @return 缩放float值
-     */
-    @Override
-    public float getSizeScl(){
-        //TODO 疑问：区块应该是600还是500方块大小？
-        return 2000 * 1.07f * 6f / 5f;
-    }
+        float lat = Mathf.clamp(Math.abs(py * 2f) / rad);
+        float tnoise = Simplex.noise3d(seed, 7, 0.56f, 1f/3f, px, py + 999f - 0.1f, pz);
+        lat = Mathf.lerp(lat, tnoise, 0.5f);
 
-    /**
-     * 计算原始 simplex噪声高度，未经过pow和mult处理
-     * @param position 星球三维坐标
-     * @return simplex3d噪声输出原始高度值
-     */
-    float rawHeight(Vec3 position){
-        //Simplex 3D噪声，基于星球种子，输入坐标做偏移避免0值重复
-        return Simplex.noise3d(seed, octaves, persistence, 1f/heightScl, 10f + position.x, 10f + position.y, 10f + position.z);
-    }
+        float height = (float)Math.pow(h, heightPow) * heightMult;
+        height = Mathf.clamp(height);
 
-    /**
-     * 计算该坐标的原始温度值（厄雷基尔星球核心逻辑）
-     * 越靠近星球(0,0,1)极点温度越高；叠加三维噪声扰动温度分布
-     * @param position 星球三维坐标
-     * @return 温度数值，用于判断红石、碳石、晶体、阿基岩
-     */
-    float rawTemp(Vec3 position){
-        //距离极点距离*2.2 减去噪声扰动，噪声越大局部温度越低
-        return position.dst(0, 0, 1)*2.2f - Simplex.noise3d(seed, 8, 0.54f, 1.4f, 10f + position.x, 10f + position.y, 10f + position.z) * 2.9f;
-    }
+        int row = Mathf.clamp((int)(lat * serpuloArr.length), 0, serpuloArr.length - 1);
+        int col = Mathf.clamp((int)(height * serpuloArr[0].length), 0, serpuloArr[0].length - 1);
+        Block block = serpuloArr[row][col];
 
-    /**
-     * 根据星球三维坐标获取对应地板方块（星球球体采样）
-     * 核心逻辑：高度选基础地形，温度rawTemp决定晶体、碳石、阿基岩、红石
-     * @param position 星球三维坐标
-     * @return Block地板方块
-     */
-    Block getBlock(Vec3 position){
-        //获取该点温度
-        float ice = rawTemp(position);
-        Tmp.v32.set(position);
-        float height = rawHeight(position);
-        Tmp.v31.set(position);
-
-        height *= 1.2f;                 //高度放大
-        height = Mathf.clamp(height);   //限制高度在0~1之间
-
-        //用高度对terrain数组采样获取基础地表方块
-        Block result = terrain[Mathf.clamp((int)(height * terrain.length), 0, terrain.length - 1)];
-
-        //【晶体石头生成】温度低 + ridged山脊噪声满足条件 → crystallineStone晶体岩石
-        if(ice < 0.3 + Math.abs(Ridged.noise3d(seed + crystalSeed, position.x + 4f, position.y + 8f, position.z + 1f, crystalOct, crystalScl)) * crystalMag){
-            return Blocks.crystallineStone;
-        }
-
-        //温度较低时，如果基础地形是流纹岩/黄石/浮土 → 替换为碳石carbonStone
-        if(ice < 0.6){
-            if(result == Blocks.rhyolite || result == Blocks.yellowStone || result == Blocks.regolith){
-                //TODO 想法：可以做生物发光/冰之类地块，现在先用碳石替代
-                return Blocks.carbonStone;
+        if (height >= darksandMin && height <= darksandMax) {
+            if (block == Blocks.grass || block == Blocks.sand || block == Blocks.dirt || block == Blocks.mud) {
+                return Blocks.darksand;
             }
         }
 
-        position = Tmp.v32;
-        //TODO 需要调参让分布更自然；TODO 边缘畸变
-        //温度合适 + ridged噪声超过阈值 → beryllicStone铍基岩（阿基岩母岩）
-        if(ice < redThresh - noArkThresh && Ridged.noise3d(seed + arkSeed, position.x + 2f, position.y + 8f, position.z + 1f, arkOct, arkScl) > arkThresh){
-            result = Blocks.beryllicStone;
+        if (block == Blocks.snow || block == Blocks.ice || block == Blocks.iceSnow) {
+            float iceNoise = Ridged.noise3d(seed + 999, pos.x * 1.2f, pos.y * 1.2f + 50f, pos.z * 1.2f, 2, 0.6f);
+            float iceFactor = iceNoise * 0.5f + 0.5f;
+            if (lat > 0.8f && height > 0.55f && iceFactor > 0.6f) {
+                return block;
+            } else {
+                return (height > 0.3f) ? Blocks.darksand : Blocks.grass;
+            }
+        }
+        return block;
+    }
+
+    private Block getErekirBlock(Vec3 pos) {
+        float h = rawHeight(pos);
+        float ice = rawTemp(pos);
+
+        float height = (float)Math.pow(h, heightPow) * heightMult;
+        float normHeight = Mathf.clamp((height - 0.05f) / 0.8f);
+        float adjustedHeight = Mathf.clamp(normHeight * erekirHeightScale + erekirHeightOffset);
+
+        float hNoise = Simplex.noise3d(seed + 888, 3, 0.5f, 0.3f, pos.x, pos.y, pos.z) * 0.12f;
+        adjustedHeight = Mathf.clamp(adjustedHeight + hNoise);
+
+        int idx = Mathf.clamp((int)(adjustedHeight * erekirTerrain.length), 0, erekirTerrain.length - 1);
+        Block result = erekirTerrain[idx];
+
+        float replaceNoise = Simplex.noise3d(seed + 789, 3, 0.5f, 0.2f, pos.x, pos.y, pos.z);
+        if (replaceNoise > 0.3f && result == Blocks.regolith) {
+            result = (replaceNoise > 0.5f) ? Blocks.yellowStone : Blocks.rhyolite;
         }
 
-        //高温判定：温度大于redThresh → 红石redStone
-        if(ice > redThresh){
+        if (ice < 0.3f + Math.abs(Ridged.noise3d(seed + crystalSeed, pos.x + 4f, pos.y + 8f, pos.z + 1f, crystalOct, crystalScl)) * crystalMag) {
+            return Blocks.crystallineStone;
+        }
+        if (ice < 0.6f) {
+            if (result == Blocks.rhyolite || result == Blocks.yellowStone || result == Blocks.regolith) {
+                result = Blocks.carbonStone;
+            }
+        }
+        if (ice < redThresh - noArkThresh && Ridged.noise3d(seed + arkSeed, pos.x + 2f, pos.y + 8f, pos.z + 1f, arkOct, arkScl) > arkThresh) {
+            result = Blocks.beryllicStone;
+        }
+        if (ice > redThresh) {
             result = Blocks.redStone;
-        }else if(ice > redThresh - 0.4f){
-            //接近高温区间，替换成浮土regolith；TODO过渡太生硬需要调优
+        } else if (ice > redThresh - 0.4f) {
             result = Blocks.regolith;
         }
         return result;
     }
 
-    /**
-     * 生成单个Tile瓦片：给地板、墙体赋值，处理局部镂空
-     * @param position 星球三维坐标
-     * @param tile 待生成的TileGen瓦片生成对象
-     */
-    @Override
-    public void genTile(Vec3 position, TileGen tile){
-        //获取基础地板方块
-        tile.floor = getBlock(position);
-
-        //流纹岩小概率生成流纹岩陨石坑地板
-        if(tile.floor == Blocks.rhyolite && rand.chance(0.01)){
-            tile.floor = Blocks.rhyoliteCrater;
-        }
-
-        //默认墙体 = 当前地板对应的墙体
-        tile.block = tile.floor.asFloor().wall;
-
-        //ridged噪声判定，满足条件墙体直接变成空气，制造地形镂空悬崖
-        if(Ridged.noise3d(seed + 1, position.x, position.y, position.z, 2, airScl) > airThresh){
-            tile.block = Blocks.air;
-        }
-
-        //另一层噪声，局部强制覆盖为碳石地板 TODO：控制碳石只出现在特定生物群系
-        if(Ridged.noise3d(seed + 2, position.x, position.y + 4f, position.z, 3, 6f) > 0.6){
-            tile.floor = Blocks.carbonStone;
+    public Block getBlock(Vec3 pos) {
+        float mixNoise = Simplex.noise3d(mixSeed, mixOctaves, 0.5f, mixFreq, pos.x * 2f + 10f, pos.y * 2f + 20f, pos.z * 2f);
+        float mixVal = mixNoise * 0.5f + 0.5f;
+        if (mixVal > mixThreshold) {
+            return getSerpuloBlock(pos);
+        } else {
+            return getErekirBlock(pos);
         }
     }
 
-    /**
-     * 核心generate函数：完整生成一张sector地图的所有细节
-     * 在genTile球体采样之后，做2D后处理：噪声重写地板、路径、【已移除蒸汽喷口】矿石、装饰物、游戏规则
-     */
     @Override
-    protected void generate(){
-        //获取本区块中心点温度
-        float temp = rawTemp(sector.tile.v);
+    public float getHeight(Vec3 pos) {
+        float h = rawHeight(pos);
+        float baseHeight = (float)Math.pow(h, heightPow) * heightMult;
+        Block block = getBlock(pos);
+        if (block == Blocks.snow || block == Blocks.ice || block == Blocks.iceSnow) {
+            return baseHeight * iceHeightScale;
+        }
+        if (block == Blocks.carbonStone) {
+            return baseHeight * 0.33f;
+        }
+        return baseHeight;
+    }
 
-        //如果区块整体温度很高
-        if(temp > 0.7){
-            pass((x, y) -> { //pass遍历地图所有瓦片执行回调
-                if(floor != Blocks.redIce){
-                    float noise = noise(x + 782, y, 7, 0.8f, 280f, 1f);
-                    if(noise > 0.62f){
-                        //噪声极高生成熔渣slag，否则生成黄石yellowStone
-                        if(noise > 0.635f){
-                            floor = Blocks.slag;
-                        }else{
-                            floor = Blocks.yellowStone;
+    @Override
+    public void getColor(Vec3 pos, Color out) {
+        Block block = getBlock(pos);
+        out.set(block.mapColor);
+        out.a = 1f;
+    }
+
+    @Override
+    public void genTile(Vec3 pos, TileGen tile) {
+        Block floor = getBlock(pos);
+        tile.floor = floor;
+        Block wall = floor.asFloor().wall;
+        if (wall != null && wall != Blocks.air) {
+            tile.block = wall;
+            if (Ridged.noise3d(seed + 1, pos.x, pos.y, pos.z, 2, 10f) > 0.1f) {
+                tile.block = Blocks.air;
+            }
+        } else {
+            tile.block = Blocks.air;
+        }
+    }
+
+    protected float noise(float x, float y, double octaves, double falloff, double scl, double mag) {
+        Vec3 v = sector.rect.project(x, y).scl(5f);
+        return Simplex.noise3d(seed, octaves, falloff, 1f / scl, v.x, v.y, v.z) * (float)mag;
+    }
+
+    @Override
+    public void postGenerate(Tiles tiles) {
+        if (tiles == null) return;
+        int w = tiles.width, h = tiles.height;
+        int cx = w / 2, cy = h / 2;
+        float difficulty = sector != null ? sector.threat : 0.5f;
+
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                Tile tile = tiles.getn(x, y);
+                if (tile == null) continue;
+                Floor floor = tile.floor();
+                Block block = tile.block();
+                if (rand.chance(0.0075)) {
+                    boolean any = false, all = true;
+                    for (int i = 0; i < 4; i++) {
+                        Tile other = tiles.get(x + Geometry.d4[i].x, y + Geometry.d4[i].y);
+                        if (other != null && other.block() == Blocks.air) any = true;
+                        else all = false;
+                    }
+                    if (any && ((block == Blocks.snowWall || block == Blocks.iceWall) ||
+                            (all && block == Blocks.air && floor == Blocks.snow && rand.chance(0.03)))) {
+                        tile.setBlock(rand.chance(0.5) ? Blocks.whiteTree : Blocks.whiteTreeDead);
+                    }
+                }
+                if (block == Blocks.air) {
+                    boolean nearSolid = false;
+                    for (int i = 0; i < 4; i++) {
+                        Tile other = tiles.get(x + Geometry.d4[i].x, y + Geometry.d4[i].y);
+                        if (other != null && other.block() != Blocks.air) {
+                            nearSolid = true;
+                            break;
                         }
-                        ore = Blocks.air; //清除矿石
                     }
-                    //TODO 需要调参；beryllicStone铍基岩局部噪声改成黄石
-                    if(noise > 0.55f && floor == Blocks.beryllicStone){
-                        floor = Blocks.yellowStone;
-                    }
-                }
-            });
-        }
-
-        cells(4); //细胞噪声，做地块斑块分化
-
-        //浮土regolith局部生成浮土墙，让地形墙体更密集
-        pass((x, y) -> {
-            if(floor == Blocks.regolith && noise(x, y, 3, 0.4f, 13f, 1f) > 0.59f){
-                block = Blocks.regolithWall;
-            }
-        });
-
-        //TODO 黄色浮土生物群系调优；TODO冰生物群系
-
-        //===== A星寻路生成一条贯穿地图的通路，给敌人通行 =====
-        float length = width/2.6f;
-        //随机角度生成起点、终点（对角）
-        Vec2 trns = Tmp.v1.trns(rand.random(360f), length);
-        int
-        spawnX = (int)(trns.x + width/2f), spawnY = (int)(trns.y + height/2f),
-        endX = (int)(-trns.x + width/2f), endY = (int)(-trns.y + height/2f);
-        float maxd = Mathf.dst(width/2f, height/2f);
-
-        erase(spawnX, spawnY, 15); //出生点清空半径15，放核心
-        //A星寻路：代价函数，固体块代价极高，优先远离地图中心；manhattan曼哈顿启发函数
-        brush(pathfind(spawnX, spawnY, endX, endY, tile -> (tile.solid() ? 300f : 0f) + maxd - tile.dst(width/2f, height/2f)/10f, Astar.manhattan), 9);
-        erase(endX, endY, 15);     //敌方出生点清空半径15
-
-        //===== 阿基石 arkycite 后处理 =====
-        pass((x, y) -> {
-            if(floor != Blocks.beryllicStone) return;
-
-            //铍基岩局部噪声转成阿基石地板 arkyicStone
-            if(Math.abs(noise(x, y + 500f, 5, 0.6f, 40f, 1f) - 0.5f) < 0.09f){
-                floor = Blocks.arkyicStone;
-            }
-            if(nearWall(x, y)) return; //靠近墙体跳过
-
-            //噪声达标生成液态阿基石地板 arkyciteFloor
-            float noise = noise(x + 300, y - x*1.6f + 100, 4, 0.8f, liqScl, 1f);
-            if(noise > liqThresh){
-                floor = Blocks.arkyciteFloor;
-            }
-        });
-
-        median(2, 0.6, Blocks.arkyciteFloor);  //中值滤波，平滑液态阿基石，消除噪点碎块
-        blend(Blocks.arkyciteFloor, Blocks.arkyicStone, 4);
-        //TODO may overwrite floor blocks under walls and look bad
-        blend(Blocks.slag, Blocks.yellowStonePlates, 4);
-        distort(10f, 12f);
-        distort(5f, 7f);
-        //does arkycite need smoothing?
-        median(2, 0.6, Blocks.arkyciteFloor);
-        //smooth out slag to prevent random 1‑tile patches
-        median(3, 0.6, Blocks.slag);
-
-        pass((x, y) -> {
-            //rough rhyolite
-            if(noise(x, y + 600 + x, 5, 0.86f, 60f, 1f) < 0.41f && floor == Blocks.rhyolite){
-                floor = Blocks.roughRhyolite;
-            }
-            if(floor == Blocks.slag && Mathf.within(x, y, spawnX, spawnY, 30f + noise(x, y, 2, 0.8f, 9f, 15f))){
-                floor = Blocks.yellowStonePlates;
-            }
-            if((floor == Blocks.arkyciteFloor || floor == Blocks.arkyicStone) && block.isStatic()){
-                block = Blocks.arkyicWall;
-            }
-            float max = 0;
-            for(Point2 p : Geometry.d8){
-                //TODO I think this is the cause of lag
-                max = Math.max(max, world.getDarkness(x + p.x, y + p.y));
-            }
-            if(max > 0){
-                block = floor.asFloor().wall;
-                if(block == Blocks.air) block = Blocks.yellowStoneWall;
-            }
-            if(floor == Blocks.yellowStonePlates && noise(x + 78 + y, y, 3, 0.8f, 6f, 1f) > 0.44f){
-                floor = Blocks.yellowStone;
-            }
-            if(floor == Blocks.redStone && noise(x + 78 - y, y, 4, 0.73f, 19f, 1f) > 0.63f){
-                floor = Blocks.denseRedStone;
-            }
-        });
-
-        inverseFloodFill(tiles.getn(spawnX, spawnY));
-        //TODO veins, blend after inverse flood fill?
-        blend(Blocks.redStoneWall, Blocks.denseRedStone, 4);
-        //make sure enemies have room
-        erase(endX, endY, 6);
-        //TODO enemies get stuck on 1x1 passages.
-        tiles.getn(endX, endY).setOverlay(Blocks.spawn);
-
-        //矿石生成逻辑
-        pass((x, y) -> {
-            if(block != Blocks.air){
-                if(nearAir(x, y)){
-                    if(block == Blocks.carbonWall && noise(x + 78, y, 4, 0.7f, 33f, 1f) > 0.52f){
-                        block = Blocks.graphiticWall;
-                    }else if(block != Blocks.carbonWall && noise(x + 782, y, 4, 0.8f, 38f, 1f) > 0.665f){
-                        ore = Blocks.wallOreBeryllium;
+                    if (!nearSolid && rand.chance(0.01) && floor.hasSurface()) {
+                        Block deco = decMap.get(floor, floor.decoration);
+                        if (deco != null && deco != Blocks.air) {
+                            tile.setBlock(deco);
+                        }
                     }
                 }
-            }else if(!nearWall(x, y)){
-                if(noise(x + 150, y + x*2 + 100, 4, 0.8f, 55f, 1f) > 0.76f){
-                    ore = Blocks.oreTungsten;
-                }
-                //TODO design ore generation so it doesn't overlap
-                if(noise(x + 999, y + 600 - x, 4, 0.63f, 45f, 1f) < 0.27f && floor == Blocks.crystallineStone){
-                    ore = Blocks.oreCrystalThorium;
-                }
-            }
-            if(noise(x + 999, y + 600 - x, 5, 0.8f, 45f, 1f) < 0.44f && floor == Blocks.crystallineStone){
-                floor = Blocks.crystalFloor;
-            }
-            if(block == Blocks.air && (floor == Blocks.crystallineStone || floor == Blocks.crystalFloor) && rand.chance(0.09) && nearWall(x, y)
-                && !near(x, y, 4, Blocks.crystalCluster) && !near(x, y, 4, Blocks.vibrantCrystalCluster)){
-                block = floor == Blocks.crystalFloor ? Blocks.vibrantCrystalCluster : Blocks.crystalCluster;
-                ore = Blocks.air;
-            }
-            if(block == Blocks.arkyicWall && rand.chance(0.23) && nearAir(x, y) && !near(x, y, 3, Blocks.crystalOrbs)){
-                block = Blocks.crystalOrbs;
-                ore = Blocks.air;
-            }
-            //TODO test, different placement
-            //TODO this biome should have more blocks in general
-            if(block == Blocks.regolithWall && rand.chance(0.3) && nearAir(x, y) && !near(x, y, 3, Blocks.crystalBlocks)){
-                block = Blocks.crystalBlocks;
-                ore = Blocks.air;
-            }
-        });
-
-        //remove props near ores, they're too annoying
-        pass((x, y) -> {
-            if(ore.asFloor().wallOre || block.itemDrop != null || (block == Blocks.air && ore != Blocks.air)){
-                removeWall(x, y, 3, b -> b instanceof TallBlock);
-            }
-        });
-
-        trimDark();
-
-        //==================== 【已完全删除蒸汽喷口vents全部代码块】 ====================
-
-        //清理无效overlay，某些overlay需要地面，没有地面就清除
-        for(Tile tile : tiles){
-            if(tile.overlay().needsSurface && !tile.floor().hasSurface()){
-                tile.setOverlay(Blocks.air);
             }
         }
 
-        decoration(0.017f);
-        //it is very hot
-        state.rules.env = sector.planet.defaultEnv;
+        for (int dx = -15; dx <= 15; dx++) {
+            for (int dy = -15; dy <= 15; dy++) {
+                if (dx * dx + dy * dy > 15 * 15) continue;
+                int tx = cx + dx, ty = cy + dy;
+                if (tx < 0 || tx >= w || ty < 0 || ty >= h) continue;
+                Tile tile = tiles.getn(tx, ty);
+                if (tile != null && tile.block() != Blocks.air) {
+                    tile.setBlock(Blocks.air);
+                }
+            }
+        }
+
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                if (x < 5 || x >= w - 5 || y < 5 || y >= h - 5) continue;
+                Tile tile = tiles.getn(x, y);
+                if (tile == null) continue;
+                Floor floor = tile.floor();
+                if (floor == null) continue;
+                if (tile.overlay() != Blocks.air || tile.block() != Blocks.air) continue;
+                if (floor == Blocks.grass || floor == Blocks.dirt || floor == Blocks.mud) {
+                    if (rand.chance(0.005)) tile.setFloor(Blocks.shale.asFloor());
+                } else if (floor == Blocks.water || floor == Blocks.darksandWater) {
+                    if (rand.chance(0.005)) tile.setFloor(Blocks.taintedWater.asFloor());
+                }
+            }
+        }
+
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                if (x >= 5 && x < w - 5 && y >= 5 && y < h - 5) continue;
+                Tile tile = tiles.getn(x, y);
+                if (tile == null) continue;
+                if (tile.floor() == null || tile.floor().isLiquid) continue;
+                if (tile.overlay() != Blocks.air) continue;
+                float r = rand.nextFloat();
+                if (r < 0.33f) tile.setOverlay(Blocks.oreBeryllium);
+                else if (r < 0.66f) tile.setOverlay(Blocks.oreLead);
+                else tile.setOverlay(Blocks.oreCopper);
+            }
+        }
+
+        float poles = 0;
+        if (sector != null) {
+            poles = Math.abs(sector.tile.v.y);
+        }
+        float nmag = 0.5f;
+        float scl = 1.0f;
+        float addscl = 1.3f;
+
+        Seq<Block> ores = Seq.with(Blocks.oreCopper, Blocks.oreLead);
+        if (Simplex.noise3d(baseSeed, 2, 0.5f, scl,
+                sector.tile.v.x, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.45f * addscl) {
+            ores.add(Blocks.oreCoal);
+        }
+        if (Simplex.noise3d(baseSeed, 2, 0.5f, scl,
+                sector.tile.v.x + 1f, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.5f * addscl) {
+            ores.add(Blocks.oreTitanium);
+        }
+        if (Simplex.noise3d(baseSeed, 2, 0.5f, scl,
+                sector.tile.v.x + 2f, sector.tile.v.y, sector.tile.v.z) * nmag + poles > 0.88f * addscl) {
+            ores.add(Blocks.oreThorium);
+        }
+        if (rand.chance(0.25)) {
+            ores.add(Blocks.oreScrap);
+        }
+        ores.add(Blocks.oreBeryllium);
+
+        FloatSeq frequencies = new FloatSeq();
+        for (int i = 0; i < ores.size; i++) {
+            frequencies.add(rand.random(-0.1f, 0.01f) - i * 0.01f + poles * 0.04f);
+        }
+
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                Tile tile = tiles.getn(x, y);
+                if (tile == null) continue;
+                Floor floor = tile.floor();
+                if (floor == null || !floor.hasSurface()) continue;
+                if (Math.abs(x - cx) <= 5 && Math.abs(y - cy) <= 5) continue;
+
+                int offsetX = x - 4, offsetY = y + 23;
+                for (int i = ores.size - 1; i >= 0; i--) {
+                    Block entry = ores.get(i);
+                    float freq = frequencies.get(i);
+                    float cond1 = Math.abs(0.5f - noise(offsetX, offsetY + i * 999, 2, 0.7f, 40 + i * 2f, 1f));
+                    float cond2 = Math.abs(0.5f - noise(offsetX, offsetY - i * 999, 1, 1f, 30 + i * 4f, 1f));
+                    if (cond1 > 0.22f + i * 0.01f && cond2 > 0.37f + freq) {
+                        tile.setOverlay(entry);
+                        if (entry == Blocks.oreScrap && rand.chance(0.33f)) {
+                            tile.setFloor(Blocks.metalFloorDamaged.asFloor());
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        int metalSeed = this.seed + 3;
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                Tile tile = tiles.getn(x, y);
+                if (tile == null) continue;
+                if (tile.block() != Blocks.air) continue;
+                if (tile.floor() == null || !tile.floor().hasSurface()) continue;
+                if (tile.overlay() != Blocks.air) continue;
+                if (Mathf.within(x, y, cx, cy, 20)) continue;
+
+                Vec3 pos = sector.rect.project((float)x / w, (float)y / h);
+                float vx = pos.x, vy = pos.y, vz = pos.z;
+
+                if (pos.dst(sector.rect.center) < 0.65f * sector.rect.radius) {
+                    float dst = 999f;
+                    for (Sector sec : Planets.serpulo.sectors) {
+                        if (sec != null && sec.hasEnemyBase()) {
+                            float d = (float)Math.sqrt(
+                                    (vx - sec.tile.v.x) * (vx - sec.tile.v.x) +
+                                            (vy - sec.tile.v.y) * (vy - sec.tile.v.y) +
+                                            (vz - sec.tile.v.z) * (vz - sec.tile.v.z)
+                            );
+                            if (d < dst) dst = d;
+                        }
+                    }
+
+                    float freq = 0.05f, freq2 = 0.07f;
+                    float baseDst = (float)Math.sqrt(
+                            (vx - basePos.x) * (vx - basePos.x) +
+                                    (vy - basePos.y) * (vy - basePos.y) +
+                                    (vz - basePos.z) * (vz - basePos.z)
+                    );
+                    float metalNoise = Simplex.noise3d(metalSeed, 3, 0.4f, 5.5f, vx, vy + 200f, vz) * 0.015f;
+                    int stripe = ((baseDst + 0.0f) % freq < freq / 2f) ? 1 : 0;
+                    float cond = dst * 0.85f + metalNoise + stripe * 0.07f;
+
+                    if (cond < 0.15f) {
+                        if ((baseDst + 0.01f) % freq2 < freq2 * 0.65f) {
+                            tile.setFloor(Blocks.metalFloor.asFloor());
+                        } else {
+                            tile.setFloor(Blocks.darkPanel6.asFloor());
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                Tile tile = tiles.getn(x, y);
+                if (tile == null) continue;
+                if (tile.block() != Blocks.air) continue;
+                float maxDark = 0;
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if (dx == 0 && dy == 0) continue;
+                        int nx = x + dx, ny = y + dy;
+                        if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
+                        float dark = world.getDarkness(nx, ny);
+                        if (dark > maxDark) maxDark = dark;
+                    }
+                }
+                if (maxDark > 0) {
+                    Floor floor = tile.floor();
+                    if (floor != null) {
+                        Block wall = floor.wall;
+                        if (wall != null && wall != Blocks.air) {
+                            tile.setBlock(wall);
+                        }
+                    }
+                }
+            }
+        }
+
+        int spawnX = cx, spawnY = cy;
+        Seq<Vec2> enemySpawns = new Seq<>();
+        int offset = rand.nextInt(360);
+        float length = w / 2.55f - rand.random(13f, 23f);
+        int waterCheckRad = 5;
+
+        for (int i = 0; i < 360; i += 5) {
+            int angle = offset + i;
+            int ex = (int)(w / 2f + Angles.trnsx(angle, length));
+            int ey = (int)(h / 2f + Angles.trnsy(angle, length));
+            if (ex < 0 || ex >= w || ey < 0 || ey >= h) continue;
+
+            int waterTiles = 0;
+            for (int rx = -waterCheckRad; rx <= waterCheckRad; rx++) {
+                for (int ry = -waterCheckRad; ry <= waterCheckRad; ry++) {
+                    int tx = ex + rx, ty = ey + ry;
+                    if (tx < 0 || tx >= w || ty < 0 || ty >= h) continue;
+                    Tile t = tiles.getn(tx, ty);
+                    if (t != null && t.floor() != null && t.floor().liquidDrop != null) {
+                        waterTiles++;
+                    }
+                }
+            }
+
+            if (waterTiles <= 4) {
+                spawnX = ex;
+                spawnY = ey;
+                int enemyCount = Math.max(1, (int)(difficulty * 4));
+                for (int j = 0; j < enemyCount; j++) {
+                    float enemyOffset = rand.range(60f);
+                    int ex2 = (int)(spawnX + Angles.trnsx(180f + enemyOffset, w / 2.5f));
+                    int ey2 = (int)(spawnY + Angles.trnsy(180f + enemyOffset, w / 2.5f));
+                    if (ex2 >= 0 && ex2 < w && ey2 >= 0 && ey2 < h) {
+                        enemySpawns.add(new Vec2(ex2, ey2));
+                    }
+                }
+                break;
+            }
+        }
+
+        Seq<Tile> enemyTiles = new Seq<>();
+        for (Vec2 e : enemySpawns) {
+            Tile tile = tiles.getn((int)e.x, (int)e.y);
+            if (tile != null) {
+                tile.setOverlay(Blocks.spawn);
+                enemyTiles.add(tile);
+            }
+        }
+
+        if (enemySpawns.size > 0) {
+            state.rules.attackMode = true;
+            state.rules.winWave = 15;
+            state.rules.waveSpacing = 60f * 60f * 2f;
+            state.rules.waves = true;
+            state.rules.enemyCoreBuildRadius = 600f;
+            state.rules.waveTeam = Team.crux;
+            try {
+                state.rules.spawns = Waves.generate(difficulty, new Rand(sector != null ? sector.id : 0), true, false, false);
+            } catch (Exception e) {
+                Log.err("波次生成失败: @", e);
+            }
+        } else {
+            state.rules.winWave = 10;
+            state.rules.waves = true;
+        }
+
+        int coreX = spawnX, coreY = spawnY;
+        boolean found = false;
+        int searchRadius = 30;
+
+        for (int r = 0; r <= searchRadius && !found; r++) {
+            for (int dx = -r; dx <= r && !found; dx++) {
+                for (int dy = -r; dy <= r && !found; dy++) {
+                    int tx = spawnX + dx, ty = spawnY + dy;
+                    if (tx < 0 || tx >= w || ty < 0 || ty >= h) continue;
+                    Tile tile = tiles.getn(tx, ty);
+                    if (tile == null) continue;
+                    if (tile.block() != Blocks.air) continue;
+                    Floor floor = tile.floor();
+                    if (floor == null || floor.isLiquid) continue;
+                    if (floor == Blocks.ice || floor == Blocks.iceSnow || floor == Blocks.snow) continue;
+
+                    boolean hasWallNearby = false;
+                    int checkRadius = 3;
+                    for (int dx2 = -checkRadius; dx2 <= checkRadius && !hasWallNearby; dx2++)
+                        for (int dy2 = -checkRadius; dy2 <= checkRadius && !hasWallNearby; dy2++) {
+                            int nx = tx + dx2, ny = ty + dy2;
+                            if (nx < 0 || nx >= w || ny < 0 || ny >= h) {
+                                hasWallNearby = true;
+                                break;
+                            }
+                            Tile neighbor = tiles.getn(nx, ny);
+                            if (neighbor != null && neighbor.block() != Blocks.air) {
+                                hasWallNearby = true;
+                                break;
+                            }
+                        }
+                    if (!hasWallNearby) {
+                        coreX = tx;
+                        coreY = ty;
+                        found = true;
+                    }
+                }
+            }
+        }
+
+        if (!found) {
+            coreX = spawnX;
+            coreY = spawnY;
+            int clearRadius = 6;
+            for (int dx = -clearRadius; dx <= clearRadius; dx++) {
+                for (int dy = -clearRadius; dy <= clearRadius; dy++) {
+                    int tx = coreX + dx, ty = coreY + dy;
+                    if (tx >= 0 && tx < w && ty >= 0 && ty < h) {
+                        Tile tile = tiles.getn(tx, ty);
+                        if (tile != null) {
+                            tile.setBlock(Blocks.air);
+                            Floor floor = tile.floor();
+                            if (floor == null || floor.isLiquid || floor == Blocks.ice || floor == Blocks.iceSnow || floor == Blocks.snow) {
+                                tile.setFloor(Blocks.stone.asFloor());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Schematics.placeLaunchLoadout(coreX, coreY);
+
+        state.rules.env = Env.terrestrial;
         state.rules.placeRangeCheck = true;
-        //TODO remove slag and arkycite around core.
-        Schematics.placeLaunchLoadout(spawnX, spawnY);
-        //all sectors are wave sectors
-        state.rules.waves = false;
-        state.rules.showSpawns = true;
+    }
+
+    @Override
+    public float getSizeScl() {
+        return 2000f;
     }
 }
