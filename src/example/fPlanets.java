@@ -1,21 +1,14 @@
-package FusionPlanet.content;
+package FusionPlanet;
 
 import arc.graphics.Color;
-import mindustry.Vars;
-import mindustry.content.Blocks;
-import mindustry.content.Planets;
-import mindustry.game.Team;
 import mindustry.graphics.g3d.HexMesh;
 import mindustry.graphics.g3d.HexSkyMesh;
 import mindustry.graphics.g3d.MultiMesh;
-import example.FusionPlanetGenerator;
+import FusionPlanet.FusionPlanetGenerator;
 import mindustry.type.Planet;
 import mindustry.world.meta.Env;
-import arc.graphics.Color;
 import mindustry.content.Blocks;
 import mindustry.game.Team;
-import mindustry.content.Planets;
-
 
 public class fPlanets {
     public static Planet fusionPlanet;
@@ -28,17 +21,22 @@ public class fPlanets {
         fusionPlanet.accessible = true;
         fusionPlanet.alwaysUnlocked = true;
         fusionPlanet.bloom = false;
-        fusionPlanet.defaultEnv = Env.terrestrial;
-        fusionPlanet.atmosphereColor = Color.valueOf("7a8cbf");
+
+        // ✔厄雷基尔高温默认环境
+        fusionPlanet.defaultEnv = Env.erekir;
+        fusionPlanet.atmosphereColor = Color.valueOf("#c46038"); // 橙红色大气，适配高温岩石星球
         fusionPlanet.atmosphereRadIn = 0.02f;
         fusionPlanet.atmosphereRadOut = 0.28f;
+
         fusionPlanet.allowLaunchToNumbered = true;
         fusionPlanet.startSector = 32;
-        fusionPlanet.defaultCore = Blocks.coreShard;
+        // ✔厄雷基尔堡垒核心开局
+        fusionPlanet.defaultCore = Blocks.coreBastion;
 
-        Color cloud1 = Color.valueOf("aabbdd");
+        // 厄雷基尔风格红橙色云层
+        Color cloud1 = Color.valueOf("#e68c5c");
         cloud1.a = 0.4f;
-        Color cloud2 = Color.valueOf("8899bb");
+        Color cloud2 = Color.valueOf("#b86242");
         cloud2.a = 0.3f;
 
         fusionPlanet.cloudMeshLoader = () -> new MultiMesh(
@@ -49,9 +47,9 @@ public class fPlanets {
         fusionPlanet.meshLoader = () -> new HexMesh(fusionPlanet, 5);
 
         fusionPlanet.ruleSetter = r -> {
-            r.waveTeam = Team.crux;
+            r.waveTeam = Team.malis;      // ✔厄雷基尔malis紫色敌人
             r.waves = true;
-            r.env = Env.terrestrial;
+            r.env = Env.erekir;           // ✔高温环境
             r.winWave = 10;
             r.placeRangeCheck = true;
         };
