@@ -1,7 +1,7 @@
 package example;
 
 import mindustry.mod.Mod;
-import example.MLPlanets;
+import example.fPlanets;
 import example.SimpleCore
 
 public class MyMod extends Mod{
