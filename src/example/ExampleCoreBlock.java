@@ -6,11 +6,11 @@ import mindustry.type.ItemStack;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.meta.BuildVisibility;
 
+import static mindustry.Vars.content;   // ✅ 添加这一行
+
 public class ExampleCoreBlock {
-    // 静态方块实例
     public static CoreBlock exampleCore;
 
-    // 静态加载方法
     public static void load() {
         exampleCore = new CoreBlock("example-core") {{
             localizedName = "示例核心";
@@ -32,7 +32,6 @@ public class ExampleCoreBlock {
             requirements(Category.effect, ItemStack.with(Items.copper, 500, Items.lead, 300, Items.silicon, 200));
         }};
 
-        // 注册到游戏内容
         content.blocks().add(exampleCore);
     }
 }
