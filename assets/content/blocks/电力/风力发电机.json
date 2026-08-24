@@ -1,0 +1,15 @@
+{
+    "name": "[green]风力发电机",
+    "description": "[green]风能发电，绿得纯粹——不烧炭，只转圈",
+    "size": 3,
+    "health": 150,
+    "powerProduction": 2,
+    "outputsPower": true,
+	"requirements": [
+		{ "item": "铁", "amount":60},
+		{ "item": "石英", "amount":20},
+		{"item":"silicon","amount":50}
+	],
+    "research": "蓄电池"
+    "category": "power"
+}

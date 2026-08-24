@@ -1,0 +1,13 @@
+{
+  "name": "墙",
+  "description": "遇强则强，遇弱则弱",
+  "health":700,
+  "armor":5,
+  "size":1 ,
+  "requirements": [ "silicon/4" ],
+  "category": "defense",
+  "research": {
+  "parent": "石英墙"
+   },
+	"researchCost": [ "silicon/40" ]
+}

@@ -1,0 +1,13 @@
+{
+    "noLighting": false,
+    "addStartingItems": false,
+    "overrideLaunchDefaults": true,
+    "alwaysUnlocked": false,
+    "localizedName": "工业遗迹",
+    "description": "工业遗迹",
+    "planet": "凯利斯",
+    "sector": 1,
+    "captureWave": 10,
+    "difficulty": 0,
+    "research": "工业起点",
+    }
