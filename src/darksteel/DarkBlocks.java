@@ -13,7 +13,7 @@ public class DarkBlocks {
     
     public static void load() {
         coreShard = new CoreBlock("core-23") {{
-            requirements(Category.effect, BuildVisibility.skill);
+            requirements(Category.effect, BuildVisibility.shown);
             alwaysUnlocked = true;
             isFirstTier = true;
             unitType = UnitTypes.alpha;
