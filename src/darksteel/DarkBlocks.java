@@ -1,4 +1,4 @@
-package darksteel.blocks;
+package darksteel;
 
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.content.Items;
