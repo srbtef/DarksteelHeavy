@@ -7,7 +7,7 @@ import mindustry.world.meta.BuildVisibility;
 import mindustry.content.Items;
 import mindustry.content.UnitTypes;
 
-public class Core {
+public class core {
 
     public static CoreBlock coreShard;
 
