@@ -1,16 +1,15 @@
 package darksteel;
 
+import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.meta.BuildVisibility;
-import mindustry.game.Category;
-import mindustry.type.UnitType;
 import mindustry.content.Items;
 import mindustry.content.UnitTypes;
 
-public class core {
+public class Core {
 
-    public static core coreShard;
+    public static CoreBlock coreShard;
 
     public static void load() {
         coreShard = new CoreBlock("core-23"){{
