@@ -1,19 +1,19 @@
 package darksteel;
 
-import mindustry.type.Category;
-import mindustry.type.ItemStack;
 import mindustry.world.blocks.storage.CoreBlock;
-import mindustry.world.meta.BuildVisibility;
 import mindustry.content.Items;
 import mindustry.content.UnitTypes;
+import mindustry.type.ItemStack;
+import mindustry.type.Category;
+import mindustry.world.meta.BuildVisibility;
 
-public class core {
-
+public class DarkBlocks {
+    
     public static CoreBlock coreShard;
-
+    
     public static void load() {
-        coreShard = new CoreBlock("core-23"){{
-            requirements(Category.effect, BuildVisibility.coreZoneOnly, ItemStack.with(Items.copper, 1000, Items.lead, 800));
+        coreShard = new CoreBlock("core-23") {{
+            requirements(Category.effect, BuildVisibility.skill);
             alwaysUnlocked = true;
             isFirstTier = true;
             unitType = UnitTypes.alpha;
