@@ -1,4 +1,4 @@
-package darksteel;
+package darksteel.blocks;
 
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.content.Items;
@@ -13,7 +13,10 @@ public class DarkBlocks {
     
     public static void load() {
         coreShard = new CoreBlock("core-23") {{
-            requirements(Category.effect, BuildVisibility.shown);
+            // 使用构造器参数（在花括号外）
+            requirements = ItemStack.with(Items.copper, 1000, Items.lead, 800);
+            
+            // 这些在花括号内设置
             alwaysUnlocked = true;
             isFirstTier = true;
             unitType = UnitTypes.alpha;
@@ -22,6 +25,9 @@ public class DarkBlocks {
             size = 3;
             buildCostMultiplier = 2f;
             unitCapModifier = 8;
+            
+            // 设置可见性（可选）
+            buildVisibility = BuildVisibility.shown;
         }};
     }
 }
