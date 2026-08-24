@@ -1,4 +1,4 @@
-package DARKSTEELHEAVY;
+package darksteel;
 
 import mindustry.type.ItemStack;
 import mindustry.world.blocks.storage.CoreBlock;
@@ -8,9 +8,9 @@ import mindustry.type.UnitType;
 import mindustry.content.Items;
 import mindustry.content.UnitTypes;
 
-public class CoreContent {
+public class core {
 
-    public static CoreBlock coreShard;
+    public static core coreShard;
 
     public static void load() {
         coreShard = new CoreBlock("core-23"){{
