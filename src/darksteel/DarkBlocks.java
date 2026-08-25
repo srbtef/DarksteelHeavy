@@ -25,8 +25,6 @@ public class DarkBlocks {
             size = 3;
             buildCostMultiplier = 2f;
             unitCapModifier = 8;
-            
-            // 设置可见性（可选）
             buildVisibility = BuildVisibility.shown;
         }};
     }
