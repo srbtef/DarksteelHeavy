@@ -2,7 +2,6 @@ package darksteel;
 
 import mindustry.mod.Mod;
 import darksteel.DarkBlocks;
-import darksteel.RingMeshUtil;
 import arc.util.Log;
 import mindustry.content.Items;
 import mindustry.type.Category;
@@ -14,6 +13,5 @@ public class main extends Mod{
  @Override
 public void loadContent() {
     DarkBlocks.load();
-    RingMeshUtil.load();
 }
 }
