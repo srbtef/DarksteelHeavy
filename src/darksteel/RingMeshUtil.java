@@ -2,11 +2,11 @@ package darksteel;
 
 import arc.graphics.Color;
 import arc.graphics.Mesh;
-import arc.graphics.g2d.Draw;
-import arc.graphics.g2d.Draw3D;
-import arc.graphics.g2d.Shader;
-import arc.math.Time;
 import arc.math.geom.Vec3;
+import mindustry.graphics.Draw3D;
+import mindustry.graphics.Draw;
+import mindustry.graphics.Shaders;
+import mindustry.core.GameState;
 
 public class RingMeshUtil {
     private static Mesh ringMesh;
@@ -19,8 +19,8 @@ public class RingMeshUtil {
         Draw3D.begin();
         Draw.blend(Draw.additive);
         Draw3D.mat.setToTranslation(x, y, 0f);
-        Draw3D.mat.rotate(Vec3.Y, Time.time * rotateSpeed);
-        ringMesh.render(Shader.unlit);
+        Draw3D.mat.rotate(Vec3.Y, GameState.instance.getTick() * rotateSpeed / 60f);
+        ringMesh.render(Shaders.unlit);
         Draw.blend(Draw.normal);
         Draw3D.end();
     }
