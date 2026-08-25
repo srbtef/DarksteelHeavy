@@ -1,4 +1,4 @@
-package darksteel
+package darksteel;
 
 import mindustry.game.Item;
 import mindustry.graphics.Color;
