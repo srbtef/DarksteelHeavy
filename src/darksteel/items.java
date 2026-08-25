@@ -3,8 +3,8 @@ package darksteel;
 import mindustry.game.Item;
 import mindustry.graphics.Color;
 
-public class XuanSteelItem extends Item {
-    public XuanSteelItem(String name) {
+public class items extends Item {
+    public items(String name) {
         super(name);
         this.color = Color.valueOf("#708090");
         this.hardness = 3;
