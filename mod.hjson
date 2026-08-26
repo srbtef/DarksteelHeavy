@@ -8,7 +8,7 @@ name: "simple-core-mod"
 author: "srbtef"
 
 #the fully qualified main class of the mod
-main: "DARKSTEELHEAVY.core"
+main: "darksteel.main"
 
 #the mod description as seen in the mod dialog
 description: "A Mindustry mod with a simple core block."
