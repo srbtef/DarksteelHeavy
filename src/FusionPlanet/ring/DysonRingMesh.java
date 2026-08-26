@@ -1,7 +1,8 @@
-package darksteel.ring;
+package FusionPlanet.ring;
 
 import arc.graphics.Color;
 import arc.graphics.Gl;
+import arc.graphics.gl.GLFrameBuffer;
 import arc.math.Mathf;
 import arc.math.Rand;
 import arc.math.geom.Mat3D;

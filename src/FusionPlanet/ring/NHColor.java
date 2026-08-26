@@ -1,4 +1,4 @@
-package darksteel.ring;
+package FusionPlanet.ring;
 
 import arc.graphics.Color;
 import arc.graphics.Colors;
@@ -31,7 +31,7 @@ public class NHColor {
             trail = Color.lightGray.cpy().lerp(Color.gray, 0.65f),
             thermoPst = Color.valueOf("CFFF87").lerp(Color.white, 0.15f),
             powerArea = Pal.power.cpy().a(0.5f),
-            stampingArc = lightSkyBack.cpy().lerp(Color.lightGray, 0.3f),
+            stampingArc = NHColor.lightSkyBack.cpy().lerp(Color.lightGray, 0.3f),
             processorBlue = Color.valueOf("cee5ed");
 
     static {
@@ -42,3 +42,13 @@ public class NHColor {
     }
 
 }
+
+
+
+
+
+
+
+
+
+

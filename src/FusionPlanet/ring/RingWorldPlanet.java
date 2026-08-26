@@ -1,4 +1,4 @@
-package darksteel.ring;
+package FusionPlanet.ring;
 
 import arc.graphics.Color;
 import arc.graphics.Gl;
@@ -22,6 +22,9 @@ import mindustry.type.Sector;
 
 import java.nio.FloatBuffer;
 
+import static mindustry.graphics.g3d.PlanetRenderer.outlineRad;
+
+/** A campaign planet whose selectable sectors are projected onto a ring world's star-facing inner wall. */
 public class RingWorldPlanet extends Planet {
     private static final Mat3D sectorTransform = new Mat3D();
     private static final float sqrt3 = Mathf.sqrt(3f);
@@ -35,7 +38,9 @@ public class RingWorldPlanet extends Planet {
     public final float hexSize;
 
     public float panelScale = 0.985f;
+    /** Shared inward offset for picking, sector fills, borders and labels. */
     public float campaignDepth = 1.35f;
+    /** Additional inward bias for sector fill so it renders visibly in front of terrain. */
     public float fillInwardBias = 0.045f;
     public float sourceLatitude = 32f;
     public float maxCameraPitch = 22f;
@@ -61,6 +66,8 @@ public class RingWorldPlanet extends Planet {
         }
         sectorApproxRadius = sectors.first().tile.v.dst(sectors.first().tile.corners[0].v);
 
+        // The ring and its parent star share a center; it is a megastructure,
+        // not a conventional orbiting satellite.
         orbitRadius = 0f;
         orbitTime = Float.POSITIVE_INFINITY;
         drawOrbit = false;
@@ -145,6 +152,8 @@ public class RingWorldPlanet extends Planet {
         float hitV = hit.y - position.y;
         float circumference = Mathf.PI2 * innerRadius;
 
+        // Compensate for the mirror across the symmetry line at column 75 (angle π/2).
+        // Swaps (x,z) -> (z,x), or equivalently θ -> π/2 - θ.
         hitU = Mathf.PI * innerRadius / 2f - hitU;
         if (hitU < 0f) hitU += circumference;
 
@@ -159,12 +168,14 @@ public class RingWorldPlanet extends Planet {
             float dst = signedDu * signedDu + dv * dv;
             boolean inside = insideSectorHex(signedDu, dv);
             if (inside) {
+                // Among hexagons that contain the hit, pick the closest center.
                 if (!insideAny || dst < nearestDst) {
                     insideAny = true;
                     nearestDst = dst;
                     nearest = sector;
                 }
             } else if (!insideAny && dst < nearestDst) {
+                // No hexagon contains the hit - fall back to closest center.
                 nearestDst = dst;
                 nearest = sector;
             }
@@ -218,6 +229,7 @@ public class RingWorldPlanet extends Planet {
 
         float x = ox + dx * t;
         float z = oz + dz * t;
+        // Only the surface whose inward normal faces the camera contains sectors.
         return dx * -x + dz * -z < 0f;
     }
 
@@ -235,6 +247,8 @@ public class RingWorldPlanet extends Planet {
     @Override
     public void drawBorders(VertexBatch3D batch, Sector sector, Color base, float alpha) {
         Color color = Tmp.c1.set(base).a((base.a + 0.25f + Mathf.absin(Time.globalTime, 5f, 0.25f)) * alpha);
+        // Keep the generic hover/border layer behind the selected Pal.accent
+        // outline so the original yellow rim remains fully readable.
         drawSelection(batch, sector, color, 0.035f, -0.04f);
     }
 
@@ -320,7 +334,7 @@ public class RingWorldPlanet extends Planet {
     }
 
     public Mesh buildGridMesh(Color color) {
-        Mesh mesh = new Mesh(true, sectors.size * 12, 0, VertexAttribute.position, VertexAttribute.color);
+        Mesh mesh = new Mesh(true, sectors.size * 12, 0, VertexAttribute.position3, VertexAttribute.color);
         FloatBuffer buffer = mesh.getVerticesBuffer();
         buffer.clear();
         float packedColor = color.toFloatBits();
@@ -339,6 +353,7 @@ public class RingWorldPlanet extends Planet {
         return mesh;
     }
 
+    /** Keeps the campaign camera inside the ring and limits pitch to the habitable band. */
     public void constrainCamera(Vec3 cameraOffset) {
         float length = cameraOffset.len();
         if (length < 0.0001f) return;
@@ -355,6 +370,7 @@ public class RingWorldPlanet extends Planet {
         }
     }
 
+    /** Places the camera on the star-facing side of a sector and points it toward the inner wall. */
     public void applyCampaignCamera(Camera3D camera, Vec3 cameraOffset, float zoom) {
         float horizontal = Mathf.sqrt(cameraOffset.x * cameraOffset.x + cameraOffset.z * cameraOffset.z);
         Vec3 radial = Tmp.v31.set(cameraOffset.x, 0f, cameraOffset.z).nor();

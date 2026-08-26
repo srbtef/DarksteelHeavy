@@ -1,4 +1,4 @@
-package darksteel.ring;
+package FusionPlanet.ring;
 
 import arc.graphics.Color;
 import arc.graphics.Gl;
@@ -14,9 +14,9 @@ import mindustry.graphics.Pal;
 import mindustry.graphics.Shaders;
 import mindustry.graphics.g3d.PlanetMesh;
 import mindustry.graphics.g3d.PlanetParams;
+import FusionPlanet.ring.NHColor;
 
-import static darksteel.ring.NHColor.*;
-
+/** Ring-world structure with distance-based terrain detail and glowing reverse-side traces. */
 public class RingWorldMesh extends PlanetMesh {
     private static final int bodySegments = 384;
     private static final float sqrt3 = Mathf.sqrt(3f);
@@ -59,7 +59,7 @@ public class RingWorldMesh extends PlanetMesh {
         Color reverse = Color.valueOf("070c15");
         Color rim = Color.valueOf("313d57");
 
-        cylinder(vertices, planet.innerRadius, -planet.campaignHalfWidth, planet.campaignHalfWidth, bodySegments, backing, true);
+//        cylinder(vertices, planet.innerRadius, -planet.campaignHalfWidth, planet.campaignHalfWidth, bodySegments, backing, true);
         cylinder(vertices, planet.outerRadius, -planet.halfWidth, planet.halfWidth, bodySegments, reverse, false);
         rim(vertices, planet.innerRadius, planet.outerRadius, planet.halfWidth, bodySegments, rim, true);
         rim(vertices, planet.innerRadius, planet.outerRadius, -planet.halfWidth, bodySegments, rim, false);
@@ -69,6 +69,7 @@ public class RingWorldMesh extends PlanetMesh {
         return mesh(vertices);
     }
 
+    /** Near and far LODs sample the vanilla terrain palette on a flat inner wall. */
     private static Seq<Mesh> buildIndexedTerrain(RingWorldPlanet planet, int detailMultiplier) {
         planet.generator.seed = planet.generator.baseSeed;
 
@@ -174,6 +175,7 @@ public class RingWorldMesh extends PlanetMesh {
         triangle(vertices, corner[0], corner[4], corner[5], normal, color);
     }
 
+    /** Metal continuation above and below the campaign surface. */
     private static void addInnerShoulders(FloatSeq vertices, RingWorldPlanet planet) {
         int columns = 120;
         float step = Mathf.PI2 / columns;
@@ -196,6 +198,7 @@ public class RingWorldMesh extends PlanetMesh {
 
                 float pad = 0.02f;
 
+                //边框1
                 quad(vertices, point(a0, planet.innerRadius, minY2),
                         point(a3, planet.innerRadius, minY2),
                         point(a3, planet.innerRadius, minY),
@@ -219,6 +222,7 @@ public class RingWorldMesh extends PlanetMesh {
                 float angleInset = step * 0.20f;
                 float yInset = (maxY - minY) * 0.20f;
 
+                //边框2
                 quad(vertices, point(a1, planet.innerRadius, minY),
                         point(a2, planet.innerRadius, minY),
                         point(a2, planet.innerRadius, minY + yInset),
@@ -239,6 +243,7 @@ public class RingWorldMesh extends PlanetMesh {
                         point(a2, planet.innerRadius, maxY - yInset + pad),
                         point(a2 - angleInset, planet.innerRadius, maxY - yInset + pad), normal, base);
 
+                //内部
                 quad(vertices, point(a1 + angleInset, planet.innerRadius, minY + yInset),
                         point(a2 - angleInset, planet.innerRadius, minY + yInset),
                         point(a2 - angleInset, planet.innerRadius, maxY - yInset),
@@ -247,14 +252,17 @@ public class RingWorldMesh extends PlanetMesh {
         }
     }
 
+    /** Restored initial reverse-side design: dark shell with blue-violet energy traces. */
     private static void addReverseTraces(FloatSeq vertices, RingWorldPlanet planet) {
         float radius = planet.outerRadius + 0.2f;
+        Color primary = NHColor.lightSkyFront.cpy();
+        Color secondary = NHColor.darkEnrFront.cpy().lerp(Color.white, 0.22f);
 
         for (int line = -4; line <= 4; line++) {
             float centerY = line / 4.5f * planet.halfWidth;
             float width = line == 0 ? 0.07f : 0.035f;
             traceBand(vertices, radius, centerY - width, centerY + width, bodySegments,
-                    line % 2 == 0 ? lightSkyFront : darkEnrFront);
+                    line % 2 == 0 ? primary : secondary);
         }
 
         int ribs = 48;
@@ -266,7 +274,7 @@ public class RingWorldMesh extends PlanetMesh {
             traceRib(vertices, radius, angle - angularWidth, angle + angularWidth,
                     Mathf.clamp(offset - span, -planet.halfWidth, planet.halfWidth),
                     Mathf.clamp(offset + span, -planet.halfWidth, planet.halfWidth),
-                    i % 3 == 0 ? darkEnrFront : lightSkyFront);
+                    i % 3 == 0 ? secondary : primary);
         }
     }
 
@@ -287,6 +295,7 @@ public class RingWorldMesh extends PlanetMesh {
                 point(a2, radius, maxY), point(a2, radius, minY), normal, color);
     }
 
+    /** Keeps each indexed VBO below the unsigned-short vertex limit. */
     private static class TerrainChunk {
         static final int maxCells = 5000;
         final FloatSeq vertices = new FloatSeq(maxCells * 6 * 7);
@@ -310,7 +319,7 @@ public class RingWorldMesh extends PlanetMesh {
 
         Mesh build() {
             Mesh mesh = new Mesh(true, vertices.size / 7, indices.size,
-                    VertexAttribute.position, VertexAttribute.normal, VertexAttribute.color);
+                    VertexAttribute.position3, VertexAttribute.normal, VertexAttribute.color);
             mesh.setVertices(vertices.items, 0, vertices.size);
             mesh.setIndices(indices.items, 0, indices.size);
             return mesh;
@@ -319,7 +328,7 @@ public class RingWorldMesh extends PlanetMesh {
 
     private static Mesh mesh(FloatSeq vertices) {
         Mesh mesh = new Mesh(true, vertices.size / 7, 0,
-                VertexAttribute.position, VertexAttribute.normal, VertexAttribute.color);
+                VertexAttribute.position3, VertexAttribute.normal, VertexAttribute.color);
         mesh.setVertices(vertices.items, 0, vertices.size);
         return mesh;
     }

@@ -1,7 +1,12 @@
-package darksteel.ring;
+package FusionPlanet.ring;
 
 import mindustry.graphics.g3d.PlanetGrid;
 
+/**
+ * Campaign topology for a finite hexagonal strip wrapped around a ring world.
+ * Visual corners are kept per tile so boundary cells can be clipped without
+ * forcing the spherical, closed topology used by vanilla planets.
+ */
 public class RingWorldGrid extends PlanetGrid {
     public RingWorldGrid(RingWorldPlanet planet) {
         super(0);
@@ -40,6 +45,9 @@ public class RingWorldGrid extends PlanetGrid {
 
     private void setNeighbor(Ptile tile, int index, RingWorldPlanet planet, int column, int row) {
         column = (column % planet.columns + planet.columns) % planet.columns;
+
+        // Boundary cells keep six visual corners. Missing outward links are
+        // folded onto the nearest boundary row, avoiding nulls in Sector.near().
         row = Math.max(0, Math.min(planet.rows - 1, row));
         Ptile neighbor = tiles[row * planet.columns + column];
         tile.tiles[index] = neighbor == tile ? tiles[row * planet.columns + (column + 1) % planet.columns] : neighbor;

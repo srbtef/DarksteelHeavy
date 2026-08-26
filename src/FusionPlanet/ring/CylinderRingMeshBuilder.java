@@ -1,4 +1,4 @@
-package darksteel.ring;
+package FusionPlanet.ring;
 
 import arc.Core;
 import arc.graphics.Color;
@@ -28,8 +28,8 @@ public class CylinderRingMeshBuilder {
         int vertices = segments * 24;
 
         Seq<VertexAttribute> attributes = Seq.with(
-                VertexAttribute.position,
-       packNormals ? VertexAttribute.normal : VertexAttribute.normal,  // 暂时都用 normal
+                VertexAttribute.position3,
+                packNormals ? VertexAttribute.packedNormal : VertexAttribute.normal,
                 VertexAttribute.color
         );
 
@@ -71,11 +71,13 @@ public class CylinderRingMeshBuilder {
             normalOuter.set(Mathf.cos(middle), 0f, Mathf.sin(middle));
             normalInner.set(normalOuter).scl(-1f);
 
+            // Outer and inner walls make the ring visible from either side with back-face culling enabled.
             triangle(buf, floats, p1, p2, p3, normalOuter, col1, col2, col2);
             triangle(buf, floats, p1, p3, p4, normalOuter, col1, col2, col1);
             triangle(buf, floats, p5, p8, p7, normalInner, col1, col1, col2);
             triangle(buf, floats, p5, p7, p6, normalInner, col1, col2, col2);
 
+            // Top and bottom surfaces use outward-facing winding and normals.
             triangle(buf, floats, p1, p6, p2, normalUp, col1, col2, col2);
             triangle(buf, floats, p1, p5, p6, normalUp, col1, col1, col2);
             triangle(buf, floats, p8, p3, p7, normalDown, col1, col2, col2);
