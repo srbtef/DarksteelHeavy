@@ -4,10 +4,9 @@ import arc.graphics.Color;
 import arc.graphics.Gl;
 import arc.graphics.Mesh;
 import arc.graphics.VertexAttribute;
-import arc.graphics.g3d.Draw3d;
+import arc.graphics.gl.Shader;
 import arc.math.Mathf;
 import arc.math.geom.Mat3D;
-import arc.math.geom.Ray;
 import arc.math.geom.Vec3;
 import arc.struct.FloatSeq;
 import arc.struct.Seq;
@@ -15,6 +14,8 @@ import arc.util.Time;
 import arc.util.Tmp;
 import mindustry.graphics.Pal;
 import mindustry.graphics.Shaders;
+import mindustry.graphics.g3d.GenericMesh;
+import mindustry.graphics.g3d.MatMesh;
 import mindustry.graphics.g3d.PlanetMesh;
 import mindustry.graphics.g3d.PlanetParams;
 import mindustry.type.Planet;
@@ -24,8 +25,8 @@ public class RingWorldPlanet extends Planet {
     private static final Mat3D sectorTransform = new Mat3D();
     private static final float sqrt3 = Mathf.sqrt(3f);
 
-    // 赤道装饰环参数（复用你现有CylinderRingMeshBuilder）
-    private Mesh equatorRingMesh;
+    // 赤道装饰环参数，复用CylinderRingMeshBuilder
+    private GenericMesh equatorRing;
     private float ringRotation;
     private static final float RING_RADIUS = 130f;
     private static final float RING_THICKNESS = 22f;
@@ -34,8 +35,6 @@ public class RingWorldPlanet extends Planet {
     private static final Color RING_MAIN_COLOR = new Color(0.85f, 0.78f, 0.68f, 0.95f);
     private static final Color RING_EDGE_COLOR = new Color(0.68f, 0.75f, 0.88f, 0.9f);
 
-    private Seq<Mesh> nearTerrain;
-    private Seq<Mesh> farTerrain;
     private RingWorldMesh worldMesh;
 
     public final int columns;
@@ -78,29 +77,30 @@ public class RingWorldPlanet extends Planet {
         drawOrbit = false;
         if (parent != null) parent.updateTotalRadius();
 
-        // 构建环形世界本体网格
+        // 构建环形世界本体
         worldMesh = new RingWorldMesh(this);
-        // 构建唯一赤道环网格
-        equatorRingMesh = CylinderRingMeshBuilder.build(RING_RADIUS, RING_THICKNESS, RING_SEGMENTS, RING_MAIN_COLOR, RING_EDGE_COLOR);
+        // 构建环网格，包装为MatMesh适配原生渲染管线
+        Mesh ringMesh = CylinderRingMeshBuilder.build(RING_RADIUS, RING_THICKNESS, RING_SEGMENTS, RING_MAIN_COLOR, RING_EDGE_COLOR);
+        Mat3D ringMat = new Mat3D();
+        ringMat.rotate(Vec3.X, RING_TILT);
+        equatorRing = new MatMesh(ringMesh, ringMat);
     }
 
+    // 严格匹配Planet原生draw方法签名
     @Override
-    public void draw() {
-        super.draw();
-        // 绘制环形世界本体
+    public void draw(PlanetParams params, Mat3D projection, Mat3D transform) {
+        super.draw(params, projection, transform);
+
+        // 渲染环形世界本体
         if (worldMesh != null) {
-            worldMesh.render(PlanetParams.get(), Draw3d.proj, Draw3d.transform);
+            worldMesh.render(params, projection, transform);
         }
-        // 只绘制这一条赤道环，移除所有多余倾斜环逻辑
-        if (equatorRingMesh != null) {
-            Draw3d.begin();
-            Mat3D mat = Draw3d.transform;
-            mat.idt();
-            mat.translate(position.x, position.y, position.z);
-            mat.rotate(Vec3.Y, ringRotation);
-            mat.rotate(Vec3.X, RING_TILT);
-            equatorRingMesh.render(mat);
-            Draw3d.end();
+
+        // 渲染单条赤道环，叠加自转
+        if (equatorRing != null) {
+            Mat3D ringTransform = Tmp.m3.set(transform);
+            ringTransform.rotate(Vec3.Y, ringRotation);
+            equatorRing.render(params, projection, ringTransform);
         }
     }
 
@@ -114,7 +114,7 @@ public class RingWorldPlanet extends Planet {
     public void dispose() {
         super.dispose();
         if (worldMesh != null) worldMesh.dispose();
-        if (equatorRingMesh != null) equatorRingMesh.dispose();
+        if (equatorRing != null) equatorRing.dispose();
     }
 
     @Override
@@ -149,14 +149,32 @@ public class RingWorldPlanet extends Planet {
         return getSurfacePoint(u, v, radial, out);
     }
 
-    // 保留你原有地形、结构构建的内部静态类逻辑，这里补全你原有缺失的基础结构占位，和你原版RingWorldMesh配套
+    // 修复RingWorldGrid调用缺失的方法
+    public Vec3 getSourcePoint(int id, Vec3 out) {
+        float u = centerU(id);
+        float v = centerV(id);
+        return getSourcePoint(u, v, out);
+    }
+
+    public Vec3 getSourceCorner(int id, int cornerIndex, Vec3 out) {
+        float u = centerU(id);
+        float v = centerV(id);
+        float angle = u / innerRadius;
+        Vec3 base = new Vec3(Mathf.cos(angle), 0f, Mathf.sin(angle));
+        // 简单六边形角点偏移，适配网格逻辑
+        float angOff = cornerIndex * Mathf.PI/3f;
+        out.set(base).rotate(Vec3.Y, angOff).scl(hexSize * 0.9f);
+        out.y = v;
+        return out;
+    }
+
+    // 内部地形Chunk工具类，修复vert方法缺失
     private static class TerrainChunk {
         static final int maxCells = 500;
         int cells;
         FloatSeq vertices = new FloatSeq();
 
         void addSurface(Vec3[] top, Vec3 normal, Color color) {
-            // 六边形面片写入逻辑，和你原版保持一致
             triangle(vertices, top[0], top[1], top[2], normal, color);
             triangle(vertices, top[0], top[2], top[3], normal, color);
             triangle(vertices, top[0], top[3], top[4], normal, color);
@@ -177,7 +195,10 @@ public class RingWorldPlanet extends Planet {
         }
 
         Mesh build() {
-            Mesh mesh = new Mesh(true, vertices.size / 7, 0, VertexAttribute.position3, VertexAttribute.normal, VertexAttribute.color);
+            Mesh mesh = new Mesh(true, vertices.size / 7, 0,
+                    VertexAttribute.position3,
+                    VertexAttribute.normal,
+                    VertexAttribute.color);
             mesh.setVertices(vertices.toArray());
             return mesh;
         }
@@ -198,8 +219,17 @@ public class RingWorldPlanet extends Planet {
         return new Vec3(Mathf.cos(angle) * radius, y, Mathf.sin(angle) * radius);
     }
 
+    private static void vert(FloatSeq vertices, Vec3 p, Vec3 normal, Color color) {
+        vertices.add(p.x, p.y, p.z);
+        vertices.add(normal.x, normal.y, normal.z);
+        vertices.add(color.toFloatBits());
+    }
+
     private static Mesh mesh(FloatSeq vertices) {
-        Mesh mesh = new Mesh(true, vertices.size, 0, VertexAttribute.position3, VertexAttribute.normal, VertexAttribute.color);
+        Mesh mesh = new Mesh(true, vertices.size, 0,
+                VertexAttribute.position3,
+                VertexAttribute.normal,
+                VertexAttribute.color);
         mesh.setVertices(vertices.toArray());
         return mesh;
     }
