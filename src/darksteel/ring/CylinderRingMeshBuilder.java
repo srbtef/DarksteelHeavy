@@ -29,7 +29,7 @@ public class CylinderRingMeshBuilder {
 
         Seq<VertexAttribute> attributes = Seq.with(
                 VertexAttribute.position,
-                packNormals ? VertexAttribute.normalPacked : VertexAttribute.normal,
+       packNormals ? VertexAttribute.normal : VertexAttribute.normal,  // 暂时都用 normal
                 VertexAttribute.color
         );
 

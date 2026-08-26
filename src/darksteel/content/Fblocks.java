@@ -7,7 +7,7 @@ import mindustry.type.ItemStack;
 import mindustry.type.Category;
 import mindustry.world.meta.BuildVisibility;
 
-public class DarkBlocks {
+public class Fblocks {
     
     public static CoreBlock coreShard;
     
