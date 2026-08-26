@@ -12,7 +12,7 @@ import arc.audio.Sound;
 
 import darksteel.content.Blocks;
 
-public class magic extends Mod {
+public class main extends Mod {
     @Override
     public void loadContent() {
         mod = Vars.mods.getMod(this.getClass());
