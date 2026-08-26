@@ -1,8 +1,9 @@
 package darksteel.content;
 
 import mindustry.world.blocks.storage.CoreBlock;
+import mindustry.type.Category; // 必须导入这个类
 import mindustry.type.ItemStack;
-import mindustry.content.Items;
+import mindustry.content.Items; // 原版Items首字母大写
 import mindustry.content.UnitTypes;
 import mindustry.world.meta.BuildVisibility;
 
@@ -11,7 +12,7 @@ public class Blocks {
 
     public static void load() {
         coreShard = new CoreBlock("core-23") {{
-            requirements(Category.effect, BuildVisibility.shown, ItemStack.with(Items.copper, 1000, Items.lead, 800));
+            requirements(Category.effect, BuildVisibility.coreZoneOnly, ItemStack.with(Items.copper, 1000, Items.lead, 800));
             alwaysUnlocked = true;
             isFirstTier = true;
             unitType = UnitTypes.alpha;
