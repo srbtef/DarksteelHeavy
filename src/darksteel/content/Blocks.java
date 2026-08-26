@@ -40,17 +40,18 @@ public class Blocks {
             baseCor;
 
     public static void load() {
-        baseCore = new baseCore("baseCore") {{
-            requirements(Category.effect, ItemStack.with(MLItems.phantomTitaniumSteel, 200, MLItems.mysticCrystal, 200, MLItems.nanoCarbonAlloy, 100));
-
-            unitType = UnitTypes.Popular;
-            health = 500;
-            itemCapacity = 2000;
-            size = 2;
+                coreShard = new CoreBlock("core-shard"){{
+            requirements(Category.effect, BuildVisibility.coreZoneOnly, with(Items.copper, 1000, Items.lead, 800));
             alwaysUnlocked = true;
 
-            unitCapModifier = 5;
+            isFirstTier = true;
+            unitType = UnitTypes.alpha;
+            health = 1100;
+            itemCapacity = 4000;
+            size = 3;
+            buildCostMultiplier = 2f;
 
+            unitCapModifier = 8;
         }};
-    }
+        }
 }
