@@ -42,7 +42,7 @@ public class fPlanets {
             r.placeRangeCheck = true;
         };
 
-        undevelopedZone = new SectorPreset("undeveloped-zone", darksteel, 5, 1);
+        undevelopedZone = new SectorPreset("undeveloped-zone", darksteel, 5);
         undevelopedZone.localizedName = "未开发区";
         undevelopedZone.description = "一片尚未被开发的区域";
         undevelopedZone.captureWave = 20;
