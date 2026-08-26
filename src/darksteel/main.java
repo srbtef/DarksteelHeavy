@@ -10,7 +10,7 @@ import mindustry.mod.Mod;
 import mindustry.mod.Mods;
 import arc.audio.Sound;
 
-import darksteel.content.Planets;
+import darksteel.content.Blocks;
 
 public class magic extends Mod {
     @Override
@@ -18,6 +18,6 @@ public class magic extends Mod {
         mod = Vars.mods.getMod(this.getClass());
       //  MLLiquids.load();
       //  MLItems.load();
-         Planets.load();
+         Blocks.load();
      }
 }
