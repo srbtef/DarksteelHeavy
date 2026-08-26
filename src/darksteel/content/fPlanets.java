@@ -30,7 +30,7 @@ public class fPlanets {
         darksteel.startSector = 32;
         darksteel.defaultCore = Blocks.coreShard;
 
-        darksteel.meshLoader = () -> new HexMesh(darksteel, 5);
+        darksteel.meshLoader = () -> new HexMesh(darksteel, 4);
 
         darksteel.cloudMeshLoader = () -> null;
 
