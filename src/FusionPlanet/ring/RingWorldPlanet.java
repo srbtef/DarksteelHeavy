@@ -14,8 +14,6 @@ import arc.util.Time;
 import arc.util.Tmp;
 import mindustry.graphics.Pal;
 import mindustry.graphics.Shaders;
-import mindustry.graphics.g3d.GenericMesh;
-import mindustry.graphics.g3d.MatMesh;
 import mindustry.graphics.g3d.PlanetMesh;
 import mindustry.graphics.g3d.PlanetParams;
 import mindustry.type.Planet;
@@ -25,8 +23,8 @@ public class RingWorldPlanet extends Planet {
     private static final Mat3D sectorTransform = new Mat3D();
     private static final float sqrt3 = Mathf.sqrt(3f);
 
-    // 赤道装饰环参数，复用CylinderRingMeshBuilder
-    private GenericMesh equatorRing;
+    // 赤道环参数
+    private Mesh equatorRingMesh;
     private float ringRotation;
     private static final float RING_RADIUS = 130f;
     private static final float RING_THICKNESS = 22f;
@@ -77,44 +75,42 @@ public class RingWorldPlanet extends Planet {
         drawOrbit = false;
         if (parent != null) parent.updateTotalRadius();
 
-        // 构建环形世界本体
         worldMesh = new RingWorldMesh(this);
-        // 构建环网格，包装为MatMesh适配原生渲染管线
-        Mesh ringMesh = CylinderRingMeshBuilder.build(RING_RADIUS, RING_THICKNESS, RING_SEGMENTS, RING_MAIN_COLOR, RING_EDGE_COLOR);
-        Mat3D ringMat = new Mat3D();
-        ringMat.rotate(Vec3.X, RING_TILT);
-        equatorRing = new MatMesh(ringMesh, ringMat);
+        // 直接构建Mesh，不包装MatMesh
+        equatorRingMesh = CylinderRingMeshBuilder.build(RING_RADIUS, RING_THICKNESS, RING_SEGMENTS, RING_MAIN_COLOR, RING_EDGE_COLOR);
     }
 
-    // 严格匹配Planet原生draw方法签名
     @Override
     public void draw(PlanetParams params, Mat3D projection, Mat3D transform) {
         super.draw(params, projection, transform);
 
-        // 渲染环形世界本体
         if (worldMesh != null) {
             worldMesh.render(params, projection, transform);
         }
 
-        // 渲染单条赤道环，叠加自转
-        if (equatorRing != null) {
-            Mat3D ringTransform = Tmp.m3.set(transform);
+        if (equatorRingMesh != null) {
+            // 手动构建环的变换矩阵，不使用Tmp.m3
+            Mat3D ringTransform = new Mat3D();
+            ringTransform.set(transform);
+            ringTransform.rotate(Vec3.X, RING_TILT);
             ringTransform.rotate(Vec3.Y, ringRotation);
-            equatorRing.render(params, projection, ringTransform);
+
+            Shader shader = Shaders.planet;
+            shader.bind();
+            shader.setUniformMatrix("proj", projection);
+            shader.setUniformMatrix("trans", ringTransform);
+            equatorRingMesh.render(shader, Gl.triangles);
         }
     }
 
-    @Override
-    public void update() {
-        super.update();
+    // 去掉无效@Override，Planet父类无update/dispose，直接自定义方法
+    public void updateRing() {
         ringRotation += Time.delta * 0.15f * 0.001f;
     }
 
-    @Override
-    public void dispose() {
-        super.dispose();
+    public void disposeRing() {
         if (worldMesh != null) worldMesh.dispose();
-        if (equatorRing != null) equatorRing.dispose();
+        if (equatorRingMesh != null) equatorRingMesh.dispose();
     }
 
     @Override
@@ -149,7 +145,7 @@ public class RingWorldPlanet extends Planet {
         return getSurfacePoint(u, v, radial, out);
     }
 
-    // 修复RingWorldGrid调用缺失的方法
+    // 适配RingWorldGrid调用
     public Vec3 getSourcePoint(int id, Vec3 out) {
         float u = centerU(id);
         float v = centerV(id);
@@ -161,14 +157,12 @@ public class RingWorldPlanet extends Planet {
         float v = centerV(id);
         float angle = u / innerRadius;
         Vec3 base = new Vec3(Mathf.cos(angle), 0f, Mathf.sin(angle));
-        // 简单六边形角点偏移，适配网格逻辑
-        float angOff = cornerIndex * Mathf.PI/3f;
+        float angOff = cornerIndex * Mathf.PI / 3f;
         out.set(base).rotate(Vec3.Y, angOff).scl(hexSize * 0.9f);
         out.y = v;
         return out;
     }
 
-    // 内部地形Chunk工具类，修复vert方法缺失
     private static class TerrainChunk {
         static final int maxCells = 500;
         int cells;
