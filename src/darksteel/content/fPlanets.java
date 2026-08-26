@@ -40,6 +40,6 @@ public class fPlanets {
             r.env = Env.terrestrial;
             r.winWave = 10;
             r.placeRangeCheck = true;
-        }
+        };
     }
 }
