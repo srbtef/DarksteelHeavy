@@ -7,16 +7,15 @@ import mindustry.type.ItemStack;
 import mindustry.type.Category;
 import mindustry.world.meta.BuildVisibility;
 
-public class Fblocks {
+public class FBlocks {
     
     public static CoreBlock coreShard;
     
     public static void load() {
         coreShard = new CoreBlock("core-23") {{
-            // 使用构造器参数（在花括号外）
-            requirements = ItemStack.with(Items.copper, 1000, Items.lead, 800);
-            
-            // 这些在花括号内设置
+            requirements(Category.effect, BuildVisibility.shown, 
+                ItemStack.with(Items.copper, 1000, Items.lead, 800)
+            );
             alwaysUnlocked = true;
             isFirstTier = true;
             unitType = UnitTypes.alpha;
@@ -25,7 +24,6 @@ public class Fblocks {
             size = 3;
             buildCostMultiplier = 2f;
             unitCapModifier = 8;
-            buildVisibility = BuildVisibility.shown;
         }};
     }
 }
