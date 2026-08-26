@@ -1,9 +1,9 @@
 package darksteel.content;
 
 import mindustry.world.blocks.storage.CoreBlock;
-import mindustry.type.Category; // 必须导入这个类
+import mindustry.type.Category;
 import mindustry.type.ItemStack;
-import mindustry.content.Items; // 原版Items首字母大写
+import mindustry.content.Items;
 import mindustry.content.UnitTypes;
 import mindustry.world.meta.BuildVisibility;
 
