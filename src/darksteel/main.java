@@ -3,7 +3,7 @@ package darksteel;
 import mindustry.mod.Mod;
 import mindustry.Vars;
 import mindustry.mod.Mods;
-import darksteel.content.Blocks;
+import darksteel.TestGroundUnit;
 //import darksteel.content.MLUnitTypes;
 
 public class main extends Mod {
@@ -13,7 +13,7 @@ public class main extends Mod {
     @Override
     public void loadContent() {
         mod = Vars.mods.getMod(this.getClass());
-        Blocks.load();
+        TestGroundUnit.load();
         //MLUnitTypes.load();
     }
 }
