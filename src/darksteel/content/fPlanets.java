@@ -35,7 +35,7 @@ public class fPlanets {
         darksteel.startSector = 32;
         darksteel.defaultCore = Blocks.coreShard;
 
-        darksteel.meshLoader = () -> new HexMesh(darksteel, 5);
+        darksteel.meshLoader = () -> new HexMesh(darksteel, 4);
 
         Color ringColor1 = Color.valueOf("88aacc");
         Color ringColor2 = Color.valueOf("667799");
