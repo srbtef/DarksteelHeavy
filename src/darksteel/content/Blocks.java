@@ -10,7 +10,7 @@ import mindustry.world.Block;
 
 public class Blocks {
     // 修正变量名统一
-    public static Block baseCor;
+    public static Blocks baseCor;
 
     public static void load() {
         baseCor = new CoreBlock("core-shard"){{
