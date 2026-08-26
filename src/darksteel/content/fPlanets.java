@@ -41,5 +41,12 @@ public class fPlanets {
             r.winWave = 10;
             r.placeRangeCheck = true;
         };
+
+        undevelopedZone = new SectorPreset("未开发区", darksteel, 5);
+        undevelopedZone.localizedName = "未开发区";
+        undevelopedZone.description = "一片尚未被开发的区域";
+        undevelopedZone.difficulty = 1;
+        undevelopedZone.captureWave = 20;
+        undevelopedZone.alwaysUnlocked = true;
     }
 }
