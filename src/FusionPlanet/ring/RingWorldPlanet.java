@@ -11,7 +11,6 @@ import arc.math.geom.Vec3;
 import arc.struct.FloatSeq;
 import arc.struct.Seq;
 import arc.util.Time;
-import arc.util.Tmp;
 import mindustry.graphics.Pal;
 import mindustry.graphics.Shaders;
 import mindustry.graphics.g3d.PlanetMesh;
@@ -76,7 +75,6 @@ public class RingWorldPlanet extends Planet {
         if (parent != null) parent.updateTotalRadius();
 
         worldMesh = new RingWorldMesh(this);
-        // 直接构建Mesh，不包装MatMesh
         equatorRingMesh = CylinderRingMeshBuilder.build(RING_RADIUS, RING_THICKNESS, RING_SEGMENTS, RING_MAIN_COLOR, RING_EDGE_COLOR);
     }
 
@@ -89,7 +87,6 @@ public class RingWorldPlanet extends Planet {
         }
 
         if (equatorRingMesh != null) {
-            // 手动构建环的变换矩阵，不使用Tmp.m3
             Mat3D ringTransform = new Mat3D();
             ringTransform.set(transform);
             ringTransform.rotate(Vec3.X, RING_TILT);
@@ -97,13 +94,13 @@ public class RingWorldPlanet extends Planet {
 
             Shader shader = Shaders.planet;
             shader.bind();
-            shader.setUniformMatrix("proj", projection);
-            shader.setUniformMatrix("trans", ringTransform);
+            // 修复：Mat3D转float数组，适配setUniformMatrix(String, float[])接口
+            shader.setUniformMatrix("proj", projection.val);
+            shader.setUniformMatrix("trans", ringTransform.val);
             equatorRingMesh.render(shader, Gl.triangles);
         }
     }
 
-    // 去掉无效@Override，Planet父类无update/dispose，直接自定义方法
     public void updateRing() {
         ringRotation += Time.delta * 0.15f * 0.001f;
     }
