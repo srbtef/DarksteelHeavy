@@ -31,6 +31,7 @@ import mindustry.entities.part.RegionPart;
 import mindustry.entities.part.HaloPart;
 import mindustry.entities.Effect;
 import arc.struct.Seq;
+import darksteel.content.unit;
 
 public class Blocks {
 
@@ -39,13 +40,10 @@ public class Blocks {
             baseCor;
 
     public static void load() {
-
-        //我超，盒
-        //基座核心
         baseCore = new baseCore("baseCore") {{
             requirements(Category.effect, ItemStack.with(MLItems.phantomTitaniumSteel, 200, MLItems.mysticCrystal, 200, MLItems.nanoCarbonAlloy, 100));
 
-            unitType = UnitTypes.alpha;
+            unitType = UnitTypes.Popular;
             health = 500;
             itemCapacity = 2000;
             size = 2;
