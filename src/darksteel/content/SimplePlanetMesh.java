@@ -6,7 +6,7 @@ import mindustry.graphics.g3d.PlanetParams;
 
 public class SimplePlanetMesh extends PlanetMesh {
     public SimplePlanetMesh(){
-        super(null, null);
+        super(null, null, null);
     }
 
     @Override

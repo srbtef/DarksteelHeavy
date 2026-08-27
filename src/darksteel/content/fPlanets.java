@@ -3,6 +3,7 @@ package darksteel.content;
 
 import arc.graphics.Color;
 import darksteel.content.SimplePlanetMesh;
+import darksteel.ring.ParticleRingMesh;
 import mindustry.content.Blocks;
 import mindustry.content.Planets;
 import mindustry.game.Team;
@@ -38,6 +39,9 @@ public class fPlanets {
 
         // 使用轻量无-op 网格以避免在内容加载阶段触发 HexMesh 相关 NPE
         fusionPlanet.meshLoader = () -> new SimplePlanetMesh();
+
+        // 恢复低开销的单层星环（ParticleRingMesh，性能优先）
+        fusionPlanet.cloudMeshLoader = () -> new ParticleRingMesh(fusionPlanet, 1.6f, 512, Color.valueOf("8a2be2"), false);
 
         fusionPlanet.ruleSetter = r -> {
             r.waveTeam = Team.crux;
