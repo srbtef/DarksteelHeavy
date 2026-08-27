@@ -6,6 +6,7 @@ import arc.math.Mathf;
  * 简单的分形值噪声山地生成器。
  * 返回值在 0..1 范围内，较大的值表示更高的地形高度（用于山峰）。
  * 可参数化：seed、缩放、octaves、lacunarity、gain。
+ * 【加强高山生成，未修复球面UV两极、接缝bug】
  */
 public class MountainGenerator {
     private final int seed;
@@ -25,7 +26,7 @@ public class MountainGenerator {
     }
 
     public MountainGenerator(int seed) {
-        this(seed, 2.5f, 5, 2f, 0.5f, 1.6f);
+        this(seed, 3.0f, 5, 2f, 0.5f, 2.2f);
     }
 
     private static float fade(float t) {
@@ -36,7 +37,6 @@ public class MountainGenerator {
         long h = x * 374761393L + y * 668265263L + seed * 0x9E3779B97F4A7C15L;
         h = (h ^ (h >>> 13)) * 1274126177L;
         h = h ^ (h >>> 16);
-        // convert to [0,1)
         return (float) ((h & 0xffffffffL) / (double) 0x100000000L);
     }
 
@@ -59,9 +59,6 @@ public class MountainGenerator {
         return Mathf.lerp(xa, xb, v);
     }
 
-    /**
-     * 在归一化平面上采样高度值（u,v 可为任意实数），返回 0..1
-     */
     public float sample(float u, float v) {
         float x = u * scale;
         float y = v * scale;
@@ -76,7 +73,7 @@ public class MountainGenerator {
             frequency *= lacunarity;
         }
         float n = sum / max;
-        // 加强高地（使山峰更尖）
+        n = (n + 0.12f) * 0.92f;
         n = Mathf.clamp(Mathf.pow(n, exponent), 0f, 1f);
         return n;
     }
