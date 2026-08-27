@@ -1,6 +1,6 @@
 package darksteel.content;
 
-import darksteel.ring.DysonRingMesh;
+import darksteel.ring.ParticleRingMesh;
 import mindustry.graphics.g3d.MultiMesh;
 import arc.graphics.Color;
 import mindustry.content.Blocks;
@@ -39,17 +39,10 @@ public class fPlanets {
 
         // 外圈紫色（带发光），内圈橙色，外层加一层细微发光作为粒子效果
         fusionPlanet.cloudMeshLoader = () -> {
-            DysonRingMesh outer = new DysonRingMesh(fusionPlanet, 1.85f, 0.08f, 1024, ringOuter, ringOuter, true);
-            outer.pulseSpeed = 1.2f;
-            outer.ambientTint = ringOuter.cpy();
-
-            DysonRingMesh inner = new DysonRingMesh(fusionPlanet, 1.65f, 0.10f, 768, ringInner, ringInner, false);
-
-            DysonRingMesh particles = new DysonRingMesh(fusionPlanet, 1.95f, 0.03f, 256, ringOuter, ringOuter, true);
-            particles.pulseSpeed = 2f;
-            particles.ambientTint = ringOuter.cpy();
-
-            return new MultiMesh(outer, inner, particles);
+            // 全部使用粒子层：外圈紫色，内圈橙色
+            ParticleRingMesh outer = new ParticleRingMesh(fusionPlanet, 1.85f, 512, ringOuter, true);
+            ParticleRingMesh inner = new ParticleRingMesh(fusionPlanet, 1.65f, 384, ringInner, false);
+            return new MultiMesh(outer, inner);
         };
 
         fusionPlanet.ruleSetter = r -> {
