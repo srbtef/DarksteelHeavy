@@ -1,6 +1,8 @@
 package darksteel.content;
 
 import darksteel.ring.DysonRingMesh;
+import darksteel.ring.RingWorldPlanet;
+import darksteel.ring.RingWorldMesh;
 import arc.graphics.Color;
 import mindustry.content.Blocks;
 import mindustry.content.Planets;
@@ -17,7 +19,8 @@ public class fPlanets {
     
 
     public static void load() {
-        fusionPlanet = new Planet("fusion-planet", Planets.sun, 1f, 2);
+        // 使用 RingWorldPlanet 以支持自定义地形网格（带真实隆起）
+        fusionPlanet = new RingWorldPlanet("fusion-planet", Planets.sun, 1.65f, 2.8f, 6f, 120, 40);
         fusionPlanet.localizedName = "Fusion World";
         fusionPlanet.visible = true;
         fusionPlanet.accessible = true;
@@ -31,7 +34,8 @@ public class fPlanets {
         fusionPlanet.startSector = 32;
         fusionPlanet.defaultCore = Blocks.coreShard;
 
-        // 使用默认网格加载器以避免在 HexMesher 未初始化时触发 NPE
+        // 使用 RingWorldMesh 生成带山脉隆起的内壁地形
+        fusionPlanet.meshLoader = () -> new RingWorldMesh((RingWorldPlanet) fusionPlanet);
 
         Color ringOuter = Color.valueOf("8a2be2"); // 紫色外圈
         Color ringInner = Color.valueOf("ff8c00"); // 橙色内圈

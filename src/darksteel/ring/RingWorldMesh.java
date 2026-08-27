@@ -79,6 +79,8 @@ public class RingWorldMesh extends PlanetMesh {
         float surfaceRadius = planet.innerRadius;
         Seq<Mesh> result = new Seq<>();
         TerrainChunk chunk = new TerrainChunk();
+        // 示例：使用 MountainGenerator 对地形高度进行扰动
+        darksteel.world.MountainGenerator mountain = new darksteel.world.MountainGenerator( (int)planet.generator.baseSeed );
         Vec3 source = new Vec3();
         Color terrain = new Color();
 
@@ -93,8 +95,12 @@ public class RingWorldMesh extends PlanetMesh {
                 planet.getSourcePoint(u, v, source);
                 if (planet.generator.skip(source)) continue;
 
+                // 使用 MountainGenerator 采样高度并将其混入生成器的颜色采样
+                float height = mountain.sample(u, v);
                 terrain.set(Color.white);
                 planet.generator.getColor(source, terrain);
+                // 根据高度对颜色进行轻微调暗/亮化
+                terrain.mul(0.8f + 0.4f * height);
                 terrain.a(1f);
                 Vec3[] top = new Vec3[6];
 
@@ -103,7 +109,11 @@ public class RingWorldMesh extends PlanetMesh {
                     float cornerU = u + Mathf.cos(angle) * hexRadius * 0.972f;
                     float cornerV = Mathf.clamp(v + Mathf.sin(angle) * hexRadius * 0.972f,
                             -planet.campaignHalfWidth, planet.campaignHalfWidth);
-                    top[corner] = planet.getSurfacePoint(cornerU, cornerV, surfaceRadius, new Vec3());
+                    // 使用 MountainGenerator 采样高度并将其映射为径向偏移，生成真实隆起
+                    float h = mountain.sample(cornerU, cornerV);
+                    float maxElevation = planet.innerRadius * 0.12f; // 可调整的最大高度比例
+                    float radial = surfaceRadius + h * maxElevation;
+                    top[corner] = planet.getSurfacePoint(cornerU, cornerV, radial, new Vec3());
                 }
 
                 Vec3 normal = new Vec3(-Mathf.cos(u / planet.innerRadius), 0f, -Mathf.sin(u / planet.innerRadius));
@@ -130,6 +140,8 @@ public class RingWorldMesh extends PlanetMesh {
         float surfaceRadius = planet.innerRadius;
         FloatSeq vertices = new FloatSeq(50000 * 7);
 
+        // 用于山地高度采样
+        darksteel.world.MountainGenerator mountain = new darksteel.world.MountainGenerator((int)planet.generator.baseSeed);
         Vec3 source = new Vec3();
         Color terrain = new Color();
 
@@ -155,7 +167,10 @@ public class RingWorldMesh extends PlanetMesh {
                     float cornerU = u + Mathf.cos(angle) * hexRadius * scale;
                     float cornerV = Mathf.clamp(v + Mathf.sin(angle) * hexRadius * scale,
                             -planet.campaignHalfWidth, planet.campaignHalfWidth);
-                    top[corner] = planet.getSurfacePoint(cornerU, cornerV, surfaceRadius, new Vec3());
+                    float h = mountain.sample(cornerU, cornerV);
+                    float maxElevation = planet.innerRadius * 0.12f;
+                    float radial = surfaceRadius + h * maxElevation;
+                    top[corner] = planet.getSurfacePoint(cornerU, cornerV, radial, new Vec3());
                 }
 
                 Vec3 normal = new Vec3(-Mathf.cos(u / planet.innerRadius), 0f, -Mathf.sin(u / planet.innerRadius));
