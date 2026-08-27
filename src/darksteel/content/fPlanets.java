@@ -2,6 +2,7 @@ package darksteel.content;
 
 
 import arc.graphics.Color;
+import darksteel.content.SimplePlanetMesh;
 import mindustry.content.Blocks;
 import mindustry.content.Planets;
 import mindustry.game.Team;
@@ -24,8 +25,7 @@ public class fPlanets {
         fusionPlanet.accessible = true;
         fusionPlanet.alwaysUnlocked = true;
 
-        // 使用原版赛普罗（Serpulo）的外观设置以匹配原版样貌
-        fusionPlanet.meshLoader = Planets.serpulo.meshLoader;
+        // 使用原版赛普罗（Serpulo）的外观设置以匹配原版样貌（云层/气候等）
         fusionPlanet.cloudMeshLoader = Planets.serpulo.cloudMeshLoader;
         fusionPlanet.bloom = Planets.serpulo.bloom;
         fusionPlanet.defaultEnv = Planets.serpulo.defaultEnv;
@@ -36,9 +36,8 @@ public class fPlanets {
         fusionPlanet.startSector = 32;
         fusionPlanet.defaultCore = Blocks.coreShard;
 
-        // 禁用在内容加载时创建复杂网格以避免引擎初始化顺序导致的 NPE
-        fusionPlanet.meshLoader = null;
-        fusionPlanet.cloudMeshLoader = null;
+        // 使用轻量无-op 网格以避免在内容加载阶段触发 HexMesh 相关 NPE
+        fusionPlanet.meshLoader = () -> new SimplePlanetMesh();
 
         fusionPlanet.ruleSetter = r -> {
             r.waveTeam = Team.crux;
