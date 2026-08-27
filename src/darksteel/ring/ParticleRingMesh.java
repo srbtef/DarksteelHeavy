@@ -2,8 +2,6 @@ package darksteel.ring;
 
 import arc.graphics.Color;
 import arc.graphics.Gl;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import arc.graphics.Mesh;
 import arc.graphics.VertexAttribute;
 import arc.math.Mathf;
@@ -28,7 +26,10 @@ public class ParticleRingMesh extends PlanetMesh {
         super(planet, null, Shaders.clouds);
         this.pointSize = pointSize;
         int count = Math.max(1, particles);
-        mesh = new Mesh(true, count, 0, VertexAttribute.position3, VertexAttribute.color);
+
+        // 每个粒子由两个三角形（6 顶点）组成，以提供更可控的大小和平滑度
+        int verts = count * 6;
+        mesh = new Mesh(true, verts, 0, VertexAttribute.position3, VertexAttribute.color);
         FloatBuffer buf = mesh.getVerticesBuffer();
         buf.clear();
 
@@ -37,10 +38,45 @@ public class ParticleRingMesh extends PlanetMesh {
             float angle = rand.random(0f, Mathf.PI2);
             float r = radius + rand.random(-0.02f, 0.02f);
             float y = rand.random(-0.01f, 0.01f);
-            float x = Mathf.cos(angle) * r;
-            float z = Mathf.sin(angle) * r;
+            float cx = Mathf.cos(angle) * r;
+            float cz = Mathf.sin(angle) * r;
+
+            // 粒子世界尺寸：基于 pointSize 缩放到合适的世界单位
+            float half = 0.0015f * pointSize;
+
+            // 切线与上向量
+            float tx = -Mathf.sin(angle);
+            float tz = Mathf.cos(angle);
+            float ux = 0f, uy = 1f, uz = 0f;
+
+            // 四个角
+            float ax = cx + tx * half + ux * half;
+            float ay = y + uy * half;
+            float az = cz + tz * half + uz * half;
+
+            float bx = cx - tx * half + ux * half;
+            float by = y + uy * half;
+            float bz = cz - tz * half + uz * half;
+
+            float cx2 = cx - tx * half - ux * half;
+            float cy2 = y - uy * half;
+            float cz2 = cz - tz * half - uz * half;
+
+            float dx = cx + tx * half - ux * half;
+            float dy = y - uy * half;
+            float dz = cz + tz * half - uz * half;
+
             float packed = color.toFloatBits();
-            buf.put(x).put(y).put(z).put(packed);
+
+            // 三角形 1: A B C
+            buf.put(ax).put(ay).put(az).put(packed);
+            buf.put(bx).put(by).put(bz).put(packed);
+            buf.put(cx2).put(cy2).put(cz2).put(packed);
+
+            // 三角形 2: A C D
+            buf.put(ax).put(ay).put(az).put(packed);
+            buf.put(cx2).put(cy2).put(cz2).put(packed);
+            buf.put(dx).put(dy).put(dz).put(packed);
         }
         buf.flip();
     }
@@ -48,22 +84,11 @@ public class ParticleRingMesh extends PlanetMesh {
     @Override
     public void render(PlanetParams params, arc.math.geom.Mat3D projection, arc.math.geom.Mat3D transform) {
         if (mesh == null) return;
-        // 设置点大小和平滑混合以获得更宽、更平滑的粒子效果（如果可用）
-        try {
-            GL20 gl = Gdx.gl20;
-            if (gl != null) {
-                gl.glEnable(GL20.GL_BLEND);
-                gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-                gl.glPointSize(pointSize);
-            }
-        } catch (Throwable ignored) {
-        }
-
         shader.bind();
         shader.setUniformMatrix4("u_proj", projection.val);
         shader.setUniformMatrix4("u_trans", transform.val);
         shader.apply();
-        mesh.render(shader, Gl.points);
+        mesh.render(shader, Gl.triangles);
     }
 
     @Override
