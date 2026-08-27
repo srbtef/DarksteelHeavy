@@ -39,11 +39,7 @@ public class fPlanets {
 
         // 多层网格星环（接近 Omloon 风格）
         fusionPlanet.cloudMeshLoader = () -> new MultiMesh(
-            new DysonRingMesh(fusionPlanet, 1.45f, 0.12f, 512, ringOuter, ringInner),
-            new DysonRingMesh(fusionPlanet, 1.65f, 0.10f, 768, ringOuter, ringInner),
             new DysonRingMesh(fusionPlanet, 1.85f, 0.08f, 1024, ringOuter, ringInner),
-            new DysonRingMesh(fusionPlanet, 1.45f + 0.02f, 0.06f, 512, ringOuter, ringOuter, true),
-            new DysonRingMesh(fusionPlanet, 1.65f + 0.02f, 0.05f, 768, ringOuter, ringOuter, true),
             new DysonRingMesh(fusionPlanet, 1.85f + 0.02f, 0.04f, 1024, ringOuter, ringOuter, true)
         );
 
