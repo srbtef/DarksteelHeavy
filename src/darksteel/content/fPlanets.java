@@ -1,6 +1,6 @@
 package darksteel.content;
 
-import darksteel.ring.ParticleRingMesh;
+import darksteel.ring.DysonRingMesh;
 import mindustry.graphics.g3d.MultiMesh;
 import arc.graphics.Color;
 import mindustry.content.Blocks;
@@ -37,13 +37,15 @@ public class fPlanets {
         Color ringOuter = Color.valueOf("8a2be2"); // 紫色外圈
         Color ringInner = Color.valueOf("ff8c00"); // 橙色内圈
 
-        // 外圈紫色（带发光），内圈橙色，外层加一层细微发光作为粒子效果
-        fusionPlanet.cloudMeshLoader = () -> {
-            // 全部使用粒子层：外圈紫色，内圈橙色
-            ParticleRingMesh outer = new ParticleRingMesh(fusionPlanet, 1.85f, 512, ringOuter, true, 28f);
-            ParticleRingMesh inner = new ParticleRingMesh(fusionPlanet, 1.65f, 384, ringInner, false, 18f);
-            return new MultiMesh(outer, inner);
-        };
+        // 多层网格星环（接近 Omloon 风格）
+        fusionPlanet.cloudMeshLoader = () -> new MultiMesh(
+            new DysonRingMesh(fusionPlanet, 1.45f, 0.12f, 512, ringOuter, ringInner),
+            new DysonRingMesh(fusionPlanet, 1.65f, 0.10f, 768, ringOuter, ringInner),
+            new DysonRingMesh(fusionPlanet, 1.85f, 0.08f, 1024, ringOuter, ringInner),
+            new DysonRingMesh(fusionPlanet, 1.45f + 0.02f, 0.06f, 512, ringOuter, ringOuter, true),
+            new DysonRingMesh(fusionPlanet, 1.65f + 0.02f, 0.05f, 768, ringOuter, ringOuter, true),
+            new DysonRingMesh(fusionPlanet, 1.85f + 0.02f, 0.04f, 1024, ringOuter, ringOuter, true)
+        );
 
         fusionPlanet.ruleSetter = r -> {
             r.waveTeam = Team.crux;
