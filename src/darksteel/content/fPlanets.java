@@ -37,7 +37,7 @@ public class fPlanets {
         Color ringColor1 = Color.valueOf("#dd5506dc");
         Color ringColor2 = Color.valueOf("#4600b6");
         // 恢复低开销的单层星环（ParticleRingMesh，性能优先）
-        fusionPlanet.cloudMeshLoader = () -> new DysonRingMesh(fusionPlanet, 1.45f, 0.12f, 512, ringColor1, ringColor2);
+        fusionPlanet.cloudMeshLoader = () -> new DysonRingMesh(fusionPlanet, 1.65f, 0.12f, 512, ringColor1, ringColor2);
         fusionPlanet.ruleSetter = r -> {
             r.waveTeam = Team.crux;
             r.waves = true;
