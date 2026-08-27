@@ -40,8 +40,8 @@ public class fPlanets {
         // 外圈紫色（带发光），内圈橙色，外层加一层细微发光作为粒子效果
         fusionPlanet.cloudMeshLoader = () -> {
             // 全部使用粒子层：外圈紫色，内圈橙色
-            ParticleRingMesh outer = new ParticleRingMesh(fusionPlanet, 1.85f, 512, ringOuter, true);
-            ParticleRingMesh inner = new ParticleRingMesh(fusionPlanet, 1.65f, 384, ringInner, false);
+            ParticleRingMesh outer = new ParticleRingMesh(fusionPlanet, 1.85f, 512, ringOuter, true, 28f);
+            ParticleRingMesh inner = new ParticleRingMesh(fusionPlanet, 1.65f, 384, ringInner, false, 18f);
             return new MultiMesh(outer, inner);
         };
 

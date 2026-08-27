@@ -2,6 +2,8 @@ package darksteel.ring;
 
 import arc.graphics.Color;
 import arc.graphics.Gl;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import arc.graphics.Mesh;
 import arc.graphics.VertexAttribute;
 import arc.math.Mathf;
@@ -16,9 +18,15 @@ import java.nio.FloatBuffer;
 /** 简单的点粒子环实现，用 Mesh 的点渲染模拟粒子环 */
 public class ParticleRingMesh extends PlanetMesh {
     private final Mesh mesh;
+    private final float pointSize;
 
     public ParticleRingMesh(Planet planet, float radius, int particles, Color color, boolean glow) {
+        this(planet, radius, particles, color, glow, glow ? 20f : 12f);
+    }
+
+    public ParticleRingMesh(Planet planet, float radius, int particles, Color color, boolean glow, float pointSize) {
         super(planet, null, Shaders.clouds);
+        this.pointSize = pointSize;
         int count = Math.max(1, particles);
         mesh = new Mesh(true, count, 0, VertexAttribute.position3, VertexAttribute.color);
         FloatBuffer buf = mesh.getVerticesBuffer();
@@ -40,6 +48,17 @@ public class ParticleRingMesh extends PlanetMesh {
     @Override
     public void render(PlanetParams params, arc.math.geom.Mat3D projection, arc.math.geom.Mat3D transform) {
         if (mesh == null) return;
+        // 设置点大小和平滑混合以获得更宽、更平滑的粒子效果（如果可用）
+        try {
+            GL20 gl = Gdx.gl20;
+            if (gl != null) {
+                gl.glEnable(GL20.GL_BLEND);
+                gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+                gl.glPointSize(pointSize);
+            }
+        } catch (Throwable ignored) {
+        }
+
         shader.bind();
         shader.setUniformMatrix4("u_proj", projection.val);
         shader.setUniformMatrix4("u_trans", transform.val);
