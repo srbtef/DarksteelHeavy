@@ -1,6 +1,7 @@
 package darksteel.content;
 
 import darksteel.ring.DysonRingMesh;
+import mindustry.graphics.g3d.MultiMesh;
 import arc.graphics.Color;
 import mindustry.content.Blocks;
 import mindustry.content.Planets;
@@ -33,11 +34,23 @@ public class fPlanets {
 
         // 使用默认网格加载器以避免在 HexMesher 未初始化时触发 NPE
 
-        Color ringColor1 = Color.valueOf("88aacc");
-        Color ringColor2 = Color.valueOf("667799");
-        
-        // 仅生成一个星环
-        fusionPlanet.cloudMeshLoader = () -> new DysonRingMesh(fusionPlanet, 1.65f, 0.10f, 768, ringColor1, ringColor2);
+        Color ringOuter = Color.valueOf("8a2be2"); // 紫色外圈
+        Color ringInner = Color.valueOf("ff8c00"); // 橙色内圈
+
+        // 外圈紫色（带发光），内圈橙色，外层加一层细微发光作为粒子效果
+        fusionPlanet.cloudMeshLoader = () -> {
+            DysonRingMesh outer = new DysonRingMesh(fusionPlanet, 1.85f, 0.08f, 1024, ringOuter, ringOuter, true);
+            outer.pulseSpeed = 1.2f;
+            outer.ambientTint = ringOuter.cpy();
+
+            DysonRingMesh inner = new DysonRingMesh(fusionPlanet, 1.65f, 0.10f, 768, ringInner, ringInner, false);
+
+            DysonRingMesh particles = new DysonRingMesh(fusionPlanet, 1.95f, 0.03f, 256, ringOuter, ringOuter, true);
+            particles.pulseSpeed = 2f;
+            particles.ambientTint = ringOuter.cpy();
+
+            return new MultiMesh(outer, inner, particles);
+        };
 
         fusionPlanet.ruleSetter = r -> {
             r.waveTeam = Team.crux;
