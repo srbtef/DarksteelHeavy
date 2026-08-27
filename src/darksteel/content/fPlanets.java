@@ -1,6 +1,6 @@
 package darksteel.content;
 
-import mindustry.graphics.g3d.HexMesh;
+
 import arc.graphics.Color;
 import mindustry.content.Blocks;
 import mindustry.content.Planets;
@@ -32,8 +32,8 @@ public class fPlanets {
         fusionPlanet.startSector = 32;
         fusionPlanet.defaultCore = Blocks.coreShard;
 
-        // 使用较低分辨率的 HexMesh 并禁用云/星环以降低渲染负载
-        fusionPlanet.meshLoader = () -> new HexMesh(fusionPlanet, 3);
+        // 禁用在内容加载时创建复杂网格以避免引擎初始化顺序导致的 NPE
+        fusionPlanet.meshLoader = null;
         fusionPlanet.cloudMeshLoader = null;
 
         fusionPlanet.ruleSetter = r -> {
