@@ -23,12 +23,16 @@ public class fPlanets {
         fusionPlanet.visible = true;
         fusionPlanet.accessible = true;
         fusionPlanet.alwaysUnlocked = true;
-        fusionPlanet.bloom = false;
-        fusionPlanet.defaultEnv = Env.terrestrial;
-        fusionPlanet.atmosphereColor = Color.valueOf("7a8cbf");
-        fusionPlanet.atmosphereRadIn = 0.02f;
-        fusionPlanet.atmosphereRadOut = 0.28f;
-        fusionPlanet.allowLaunchToNumbered = true;
+
+        // 使用原版赛普罗（Serpulo）的外观设置以匹配原版样貌
+        fusionPlanet.meshLoader = Planets.serpulo.meshLoader;
+        fusionPlanet.cloudMeshLoader = Planets.serpulo.cloudMeshLoader;
+        fusionPlanet.bloom = Planets.serpulo.bloom;
+        fusionPlanet.defaultEnv = Planets.serpulo.defaultEnv;
+        fusionPlanet.atmosphereColor = Planets.serpulo.atmosphereColor;
+        fusionPlanet.atmosphereRadIn = Planets.serpulo.atmosphereRadIn;
+        fusionPlanet.atmosphereRadOut = Planets.serpulo.atmosphereRadOut;
+        fusionPlanet.allowLaunchToNumbered = Planets.serpulo.allowLaunchToNumbered;
         fusionPlanet.startSector = 32;
         fusionPlanet.defaultCore = Blocks.coreShard;
 
