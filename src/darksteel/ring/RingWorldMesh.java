@@ -70,7 +70,8 @@ public class RingWorldMesh extends PlanetMesh {
 
     /** Near and far LODs sample the vanilla terrain palette on a flat inner wall. */
     private static Seq<Mesh> buildIndexedTerrain(RingWorldPlanet planet, int detailMultiplier) {
-        planet.generator.seed = planet.generator.baseSeed;
+        int genSeed = planet.generator != null ? planet.generator.baseSeed : planet.hashCode();
+        if (planet.generator != null) planet.generator.seed = planet.generator.baseSeed;
 
         int columns = planet.columns * detailMultiplier;
         float hexRadius = Mathf.PI2 * planet.innerRadius / (columns * 1.5f);
@@ -80,7 +81,7 @@ public class RingWorldMesh extends PlanetMesh {
         Seq<Mesh> result = new Seq<>();
         TerrainChunk chunk = new TerrainChunk();
         // 示例：使用 MountainGenerator 对地形高度进行扰动
-        darksteel.world.MountainGenerator mountain = new darksteel.world.MountainGenerator( (int)planet.generator.baseSeed );
+        darksteel.world.MountainGenerator mountain = new darksteel.world.MountainGenerator(genSeed);
         Vec3 source = new Vec3();
         Color terrain = new Color();
 
@@ -93,12 +94,15 @@ public class RingWorldMesh extends PlanetMesh {
                 if (v > planet.campaignHalfWidth + 0.001f) continue;
 
                 planet.getSourcePoint(u, v, source);
-                if (planet.generator.skip(source)) continue;
+                boolean skip = planet.generator != null ? planet.generator.skip(source) : false;
+                if (skip) continue;
 
                 // 使用 MountainGenerator 采样高度并将其混入生成器的颜色采样
                 float height = mountain.sample(u, v);
                 terrain.set(Color.white);
-                planet.generator.getColor(source, terrain);
+                if (planet.generator != null) {
+                    planet.generator.getColor(source, terrain);
+                }
                 // 根据高度对颜色进行轻微调暗/亮化
                 terrain.mul(0.8f + 0.4f * height);
                 terrain.a(1f);
@@ -131,7 +135,8 @@ public class RingWorldMesh extends PlanetMesh {
     }
 
     private static Mesh buildTerrain(RingWorldPlanet planet, int detailMultiplier) {
-        planet.generator.seed = planet.generator.baseSeed;
+        int genSeed = planet.generator != null ? planet.generator.baseSeed : planet.hashCode();
+        if (planet.generator != null) planet.generator.seed = planet.generator.baseSeed;
 
         int columns = planet.columns * detailMultiplier;
         float hexRadius = Mathf.PI2 * planet.innerRadius / (columns * 1.5f);
@@ -141,7 +146,7 @@ public class RingWorldMesh extends PlanetMesh {
         FloatSeq vertices = new FloatSeq(50000 * 7);
 
         // 用于山地高度采样
-        darksteel.world.MountainGenerator mountain = new darksteel.world.MountainGenerator((int)planet.generator.baseSeed);
+        darksteel.world.MountainGenerator mountain = new darksteel.world.MountainGenerator(genSeed);
         Vec3 source = new Vec3();
         Color terrain = new Color();
 
@@ -154,10 +159,11 @@ public class RingWorldMesh extends PlanetMesh {
                 if (v > planet.campaignHalfWidth + 0.001f) continue;
 
                 planet.getSourcePoint(u, v, source);
-                if (planet.generator.skip(source)) continue;
+                boolean skip = planet.generator != null ? planet.generator.skip(source) : false;
+                if (skip) continue;
 
                 terrain.set(Color.white);
-                planet.generator.getColor(source, terrain);
+                if (planet.generator != null) planet.generator.getColor(source, terrain);
                 terrain.a(1f);
                 float scale = 0.982f;
 
