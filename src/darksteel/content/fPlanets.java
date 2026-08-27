@@ -37,10 +37,16 @@ public class fPlanets {
         Color ringOuter = Color.valueOf("8a2be2"); // 紫色外圈
         Color ringInner = Color.valueOf("ff8c00"); // 橙色内圈
 
-        // 多层网格星环（接近 Omloon 风格）
+        // 多层网格星环（接近 Omloon 风格），已放大尺寸
         fusionPlanet.cloudMeshLoader = () -> new MultiMesh(
-            new DysonRingMesh(fusionPlanet, 1.85f, 0.08f, 1024, ringOuter, ringInner),
-            new DysonRingMesh(fusionPlanet, 1.85f + 0.02f, 0.04f, 1024, ringOuter, ringOuter, true)
+            // 主体层（更大半径、更厚）
+                new DysonRingMesh(fusionPlanet, 1.95f, 0.08f, 512, ringOuter, ringInner),
+                new DysonRingMesh(fusionPlanet, 2.25f, 0.07f, 768, ringOuter, ringInner),
+                new DysonRingMesh(fusionPlanet, 2.55f, 0.05f, 1024, ringOuter, ringInner),
+            // 发光层（略微外移并带发光标志）
+            new DysonRingMesh(fusionPlanet, 1.95f + 0.04f, 0.04f, 512, ringOuter, ringOuter, true),
+            new DysonRingMesh(fusionPlanet, 2.25f + 0.04f, 0.035f, 768, ringOuter, ringOuter, true),
+            new DysonRingMesh(fusionPlanet, 2.55f + 0.04f, 0.03f, 1024, ringOuter, ringOuter, true)
         );
 
         fusionPlanet.ruleSetter = r -> {

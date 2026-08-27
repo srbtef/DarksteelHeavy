@@ -16,7 +16,6 @@ import java.nio.FloatBuffer;
 /** 简单的点粒子环实现，用 Mesh 的点渲染模拟粒子环 */
 public class ParticleRingMesh extends PlanetMesh {
     private final Mesh mesh;
-    private final float pointSize;
 
     public ParticleRingMesh(Planet planet, float radius, int particles, Color color, boolean glow) {
         this(planet, radius, particles, color, glow, glow ? 20f : 12f);
@@ -24,7 +23,7 @@ public class ParticleRingMesh extends PlanetMesh {
 
     public ParticleRingMesh(Planet planet, float radius, int particles, Color color, boolean glow, float pointSize) {
         super(planet, null, Shaders.clouds);
-        this.pointSize = pointSize;
+        float localPointSize = pointSize;
         int count = Math.max(1, particles);
 
         // 每个粒子由两个三角形（6 顶点）组成，以提供更可控的大小和平滑度
@@ -42,7 +41,7 @@ public class ParticleRingMesh extends PlanetMesh {
             float cz = Mathf.sin(angle) * r;
 
             // 粒子世界尺寸：基于 pointSize 缩放到合适的世界单位
-            float half = 0.0015f * pointSize;
+            float half = 0.0015f * localPointSize;
 
             // 切线与上向量
             float tx = -Mathf.sin(angle);
