@@ -32,7 +32,7 @@ public class fPlanets {
         fusionPlanet.startSector = 32;
         fusionPlanet.defaultCore = Blocks.coreShard;
 
-        fusionPlanet.meshLoader = () -> new HexMesh(fusionPlanet, 5);
+        // 使用默认网格加载器以避免在 HexMesher 未初始化时触发 NPE
 
         Color ringColor1 = Color.valueOf("88aacc");
         Color ringColor2 = Color.valueOf("667799");
