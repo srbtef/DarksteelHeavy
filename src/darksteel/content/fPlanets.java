@@ -2,6 +2,7 @@ package darksteel.content;
 
 
 import arc.graphics.Color;
+import darksteel.ring.DysonRingMesh;
 import darksteel.ring.ParticleRingMesh;
 import mindustry.content.Blocks;
 import mindustry.content.Planets;
@@ -33,10 +34,10 @@ public class fPlanets {
         fusionPlanet.defaultCore = Blocks.coreShard;
 
         fusionPlanet.meshLoader = () -> new HexMesh(fusionPlanet, 5);
-
+        Color ringColor1 = Color.valueOf("#dd5506dc");
+        Color ringColor2 = Color.valueOf("#4600b6");
         // 恢复低开销的单层星环（ParticleRingMesh，性能优先）
-        fusionPlanet.cloudMeshLoader = () -> new ParticleRingMesh(fusionPlanet, 1.6f, 1024, Color.valueOf("8a2be2"), false);
-
+        fusionPlanet.cloudMeshLoader = () -> new DysonRingMesh(fusionPlanet, 1.45f, 0.12f, 512, ringColor1, ringColor2);
         fusionPlanet.ruleSetter = r -> {
             r.waveTeam = Team.crux;
             r.waves = true;
