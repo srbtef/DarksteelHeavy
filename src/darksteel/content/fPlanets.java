@@ -37,7 +37,7 @@ public class fPlanets {
         Color ringInner = Color.valueOf("ff8c00"); // 橙色内圈
 
         // 保持距离较小（星环靠近行星），但增大星环“大小”（厚度/视觉规模）
-        fusionPlanet.cloudMeshLoader = () -> new DysonRingMesh(fusionPlanet, 1.65f, 1.8f, 2048, ringOuter, ringInner, true);
+        fusionPlanet.cloudMeshLoader = () -> new DysonRingMesh(fusionPlanet, 1.6f, 0.3f, 1024, ringOuter, ringInner, true);
 
         fusionPlanet.ruleSetter = r -> {
             r.waveTeam = Team.crux;
