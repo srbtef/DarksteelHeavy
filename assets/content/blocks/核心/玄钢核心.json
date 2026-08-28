@@ -1,8 +1,10 @@
 {
+"type": "CoreBlock",
+"name": "玄钢核心",
 "category": "effect",
 "description": "基地的核心。一旦被摧毁，此区块就会丢失。",
 "alwaysUnlocked": true,
-"description":"较为常用的核",//介绍
+"description":"较为常用的核",
 "size": 3,
 "health": 3000,
 "armor": 0,

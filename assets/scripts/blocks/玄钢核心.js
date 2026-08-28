@@ -1,1 +1,0 @@
-exports.玄钢核心 = new CoreBlock('玄钢核心');
