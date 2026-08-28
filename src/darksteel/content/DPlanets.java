@@ -20,7 +20,7 @@ public class DPlanets {
     
 
     public static void load() {
-        DPlanet = new Planet("Dplanet", Planets.sun, 1f, 2);
+        DPlanet = new Planet("Dplanet", null, 1f, 2);
         DPlanet.generator = new DPlanetGenerator();
         DPlanet.localizedName = "斯萨卡";
         DPlanet.visible = true;
