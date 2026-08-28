@@ -13,7 +13,7 @@ public class DBlocks {
 
     public static void load() {
         coreo = new CoreBlock("core-shard") {{
-            requirements(Category.effect, BuildVisibility.show, with(Items.copper, 1000, Items.lead, 800));
+            requirements(Category.effect, BuildVisibility.shown, with(Items.copper, 1000, Items.lead, 800));
             alwaysUnlocked = true;
 
             isFirstTier = true;
