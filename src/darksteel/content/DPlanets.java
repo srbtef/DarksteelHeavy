@@ -44,11 +44,19 @@ public class DPlanets {
                 new DysonRingMesh(DPlanet, 2.05f, 0.12f, 512, ringColor1, ringColor2),
                 new DysonRingMesh(DPlanet, 2.06f, 0.12f, 512, ringColor1, ringColor2),
                 new DysonRingMesh(DPlanet, 2.07f, 0.12f, 512, ringColor1, ringColor2),
+                new DysonRingMesh(DPlanet, 2.08f, 0.12f, 512, ringColor1, ringColor2),
+                new DysonRingMesh(DPlanet, 2.09f, 0.12f, 512, ringColor1, ringColor2),
                 new DysonRingMesh(DPlanet, 2.10f, 0.12f, 512, ringColor1, ringColor2),
+                new DysonRingMesh(DPlanet, 2.11f, 0.12f, 512, ringColor1, ringColor2),
+                new DysonRingMesh(DPlanet, 2.12f, 0.12f, 512, ringColor1, ringColor2),
+                new DysonRingMesh(DPlanet, 2.13f, 0.12f, 512, ringColor1, ringColor2),
+                new DysonRingMesh(DPlanet, 2.14f, 0.12f, 512, ringColor1, ringColor2),
                 new DysonRingMesh(DPlanet, 2.15f, 0.12f, 512, ringColor1, ringColor2),
                 new DysonRingMesh(DPlanet, 2.16f, 0.12f, 512, ringColor1, ringColor2),
-                new DysonRingMesh(DPlanet, 2.14f, 0.12f, 512, ringColor1, ringColor2),
-                new DysonRingMesh(DPlanet, 2.12f, 0.12f, 512, ringColor1, ringColor2)
+                new DysonRingMesh(DPlanet, 2.17f, 0.12f, 512, ringColor1, ringColor2),
+                new DysonRingMesh(DPlanet, 2.18f, 0.12f, 512, ringColor1, ringColor2),
+                new DysonRingMesh(DPlanet, 2.19f, 0.12f, 512, ringColor1, ringColor2),
+                new DysonRingMesh(DPlanet, 2.20f, 0.12f, 512, ringColor1, ringColor2)
         );
 
         DPlanet.ruleSetter = r -> {
