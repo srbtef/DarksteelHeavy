@@ -1,10 +1,12 @@
 {
-    "name": "[green]风力发电机",
-    "description": "[green]风能发电，绿得纯粹——不烧炭，只转圈",
-    "size": 3,
-    "health": 150,
-    "powerProduction": 2,
-    "outputsPower": true,
+	"type": "SolarGenerator",
+	"name": "[green]风力发电机",
+	"description": "[green]风能发电，绿得纯粹——不烧炭，只转圈",
+	"size": 3,
+	"health": 150,
+	"hasPower": true,
+	"powerProduction": 2,
+	"outputsPower": true,
 	"drawer": {
 		"type": "DrawMulti",
 		"drawers": [
