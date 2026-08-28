@@ -11,7 +11,9 @@ public class main extends Mod {
     @Override
     public void loadContent() {
         mod = Vars.mods.getMod(this.getClass());
-       fPlanets.load();
+    // load core blocks before planets so defaultCore references exist
+    darksteel.content.DBlocks.load();
+    fPlanets.load();
         //MLUnitTypes.load();
     }
 }
