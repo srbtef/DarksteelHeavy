@@ -5,7 +5,6 @@ import darksteel.ring.DysonRingMesh;
 import darksteel.ring.ParticleRingMesh;
 import mindustry.content.Planets;
 import mindustry.Vars;
-import mindustry.type.TechTree;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.game.Team;
 import mindustry.graphics.g3d.HexMesh;
@@ -13,8 +12,6 @@ import mindustry.graphics.g3d.MultiMesh;
 import mindustry.type.Planet;
 import mindustry.type.SectorPreset;
 import mindustry.world.meta.Env; 
-import mindustry.type.TechTree;
-import static mindustry.content.Blocks.*;
 import static mindustry.content.Blocks.*;
 
 public class DPlanets {

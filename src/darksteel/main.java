@@ -11,8 +11,7 @@ public class main extends Mod {
     @Override
     public void loadContent() {
         mod = Vars.mods.getMod(this.getClass());
-    // load core blocks before planets so defaultCore references exist
-    darksteel.content.DBlocks.load();
+    // load core blocks before planets so defaultCore references e
     DPlanets.load();
     }
 }
