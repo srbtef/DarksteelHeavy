@@ -1,4 +1,4 @@
-const blocks = require("blocks/玄钢核心");
+//const blocks = require("blocks/玄钢核心");
 const lib = require("base/lib");
 
 const 凯利斯 = new Planet("凯利斯", Planets.sun, 1, 1.5);
@@ -26,7 +26,7 @@ new NoiseMesh(凯利斯, 28, 1, Color.valueOf("#205899"),1 , 20, 0.7, 2, 0.28)
 凯利斯.allowLaunchToNumbered = false;
 凯利斯.lightDstFrom = 0.2;
 凯利斯.defaultEnv = Env.terrestrial;
-凯利斯.defaultCore = blocks.玄钢核心;
+//凯利斯.defaultCore = blocks.玄钢核心;
 凯利斯.localizedName = "凯利斯";
 凯利斯.prebuildBase = false;
 凯利斯.bloom = true;
