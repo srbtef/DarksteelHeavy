@@ -2,10 +2,12 @@ package darksteel.content;
 
 
 import arc.graphics.Color;
+import darksteel.ring.DysonRingMesh;
 import darksteel.ring.ParticleRingMesh;
 import mindustry.content.Planets;
 import mindustry.game.Team;
 import mindustry.graphics.g3d.HexMesh;
+import mindustry.graphics.g3d.MultiMesh;
 import mindustry.type.Planet;
 import mindustry.type.SectorPreset;
 import mindustry.world.meta.Env;
@@ -33,8 +35,12 @@ public class fPlanets {
 
         fusionPlanet.meshLoader = () -> new HexMesh(fusionPlanet, 5);
         Color ringColor1 = Color.valueOf("#4600b6");
+        Color ringColor2 = Color.valueOf("#ff5100");
         // 恢复低开销的单层星环（ParticleRingMesh，性能优先）
-        fusionPlanet.cloudMeshLoader = () -> new ParticleRingMesh(fusionPlanet, 1.6f, 512, ringColor1, false);
+       fusionPlanet.cloudMeshLoader = () -> new MultiMesh(
+                new DysonRingMesh(fusionPlanet, 1.45f, 0.12f, 512, ringColor1, ringColor2)
+        );
+
         fusionPlanet.ruleSetter = r -> {
             r.waveTeam = Team.crux;
             r.waves = true;
@@ -43,7 +49,7 @@ public class fPlanets {
             r.placeRangeCheck = true;
         };
 
-        SectorPreset gyqd = new SectorPreset("gyqd", fusionPlanet, 1);
+        SectorPreset gyqd = new SectorPreset("gyqd", fusionPlanet, 0);
         gyqd.localizedName = "工业起点";
         gyqd.description = "一片尚未被开发的区域";
         gyqd.difficulty = 0;
