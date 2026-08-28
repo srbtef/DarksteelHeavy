@@ -21,6 +21,7 @@ public class DPlanets {
 
     public static void load() {
         DPlanet = new Planet("Dplanet", null, 1f, 2);
+        DPlanet.starName = "自定义标题";
         DPlanet.generator = new DPlanetGenerator();
         DPlanet.localizedName = "斯萨卡";
         DPlanet.visible = true;
