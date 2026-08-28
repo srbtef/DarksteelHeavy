@@ -30,7 +30,7 @@ import mindustry.world.blocks.environment.Floor;
 
 import static mindustry.Vars.*;
 
-public class FusionPlanetGenerator extends PlanetGenerator {
+public class DPlanetGenerator extends PlanetGenerator {
 
     private static final Block[][] serpuloArr = {
             {Blocks.water, Blocks.darksandWater, Blocks.darksand, Blocks.darksand, Blocks.darksand, Blocks.darksand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.darksandTaintedWater, Blocks.stone, Blocks.stone},
@@ -93,7 +93,7 @@ public class FusionPlanetGenerator extends PlanetGenerator {
 
     private final BaseGenerator basegen = new BaseGenerator();
 
-    public FusionPlanetGenerator() {
+    public DPlanetGenerator() {
         decMap.put(Blocks.moss, Blocks.sporeCluster);
         decMap.put(Blocks.taintedWater, Blocks.water);
         decMap.put(Blocks.darksandTaintedWater, Blocks.darksandWater);

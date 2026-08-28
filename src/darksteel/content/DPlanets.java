@@ -13,7 +13,8 @@ import mindustry.graphics.g3d.MultiMesh;
 import mindustry.type.Planet;
 import mindustry.type.SectorPreset;
 import mindustry.world.meta.Env; 
-
+import mindustry.type.TechTree;
+import static mindustry.content.Blocks.*;
 import static mindustry.content.Blocks.*;
 
 public class DPlanets {
