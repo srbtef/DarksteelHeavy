@@ -43,14 +43,14 @@ public class fPlanets {
             r.placeRangeCheck = true;
         };
 
-        SectorPreset gyqd = new SectorPreset("工业起点", fusionPlanet, 1);
+        SectorPreset gyqd = new SectorPreset("gyqd", fusionPlanet, 1);
         gyqd.localizedName = "工业起点";
         gyqd.description = "一片尚未被开发的区域";
         gyqd.difficulty = 0;
         gyqd.captureWave = 20;
         gyqd.alwaysUnlocked = true;
 
-        SectorPreset gyyj = new SectorPreset("工业遗迹", fusionPlanet, 1);
+        SectorPreset gyyj = new SectorPreset("gyyj", fusionPlanet, 1);
         gyyj.localizedName = "工业遗迹";
         gyyj.description = "一片尚未被开发的区域";
         gyyj.difficulty = 0;
