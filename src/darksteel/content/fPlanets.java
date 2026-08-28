@@ -5,6 +5,9 @@ import arc.graphics.Color;
 import darksteel.ring.DysonRingMesh;
 import darksteel.ring.ParticleRingMesh;
 import mindustry.content.Planets;
+import mindustry.Vars;
+import mindustry.type.ContentType;
+import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.game.Team;
 import mindustry.graphics.g3d.HexMesh;
 import mindustry.graphics.g3d.MultiMesh;
@@ -31,7 +34,9 @@ public class fPlanets {
         fusionPlanet.atmosphereRadOut = 0.28f;
         fusionPlanet.allowLaunchToNumbered = true;
         fusionPlanet.startSector = 0;
-        fusionPlanet.defaultCore = DBlocks.coreo;
+        // prefer JSON-defined core block if present, otherwise use Java-defined DBlocks.coreo
+        CoreBlock jsonCore = (CoreBlock) Vars.content.getByName(ContentType.block, "玄钢核心");
+        fusionPlanet.defaultCore = jsonCore != null ? jsonCore : DBlocks.coreo;
 
         fusionPlanet.meshLoader = () -> new HexMesh(fusionPlanet, 5);
         Color ringColor1 = Color.valueOf("#4600b6");
