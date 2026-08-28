@@ -37,7 +37,7 @@ public class DPlanets {
         DPlanet.allowLaunchToNumbered = true;
         DPlanet.startSector = 0;
         // force use of Java-defined core block
-        DPlanet.defaultCore = Blocks.coreShard;
+        DPlanet.defaultCore = coreShard;
 
         DPlanet.meshLoader = () -> new HexMesh(DPlanet, 5);
         Color ringColor1 = Color.valueOf("#4600b6");
