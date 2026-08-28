@@ -16,12 +16,12 @@
 			},
 			"DrawDefault"
 		]
-	}
+	},
 	"requirements": [
 		{ "item": "铁", "amount":60},
 		{ "item": "石英", "amount":20},
 		{"item":"silicon","amount":50}
 	],
-    "research": "蓄电池"
+    "research": "蓄电池",
     "category": "power"
 }
