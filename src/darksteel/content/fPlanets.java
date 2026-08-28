@@ -34,7 +34,7 @@ public class fPlanets {
         fusionPlanet.allowLaunchToNumbered = true;
         fusionPlanet.startSector = 0;
         // force use of Java-defined core block
-        //fusionPlanet.defaultCore = DBlocks.coreo;
+        fusionPlanet.defaultCore = DBlocks.coreo;
 
         fusionPlanet.meshLoader = () -> new HexMesh(fusionPlanet, 5);
         Color ringColor1 = Color.valueOf("#4600b6");
