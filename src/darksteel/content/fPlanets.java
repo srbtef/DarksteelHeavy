@@ -52,7 +52,7 @@ public class fPlanets {
             r.placeRangeCheck = true;
         };
 
-        SectorPreset gyqd = new SectorPreset("gyqd", fusionPlanet, 0);
+       /*  SectorPreset gyqd = new SectorPreset("gyqd", fusionPlanet, 0);
         gyqd.localizedName = "工业起点";
         gyqd.description = "一片尚未被开发的区域";
         gyqd.difficulty = 0;
@@ -64,6 +64,6 @@ public class fPlanets {
         gyyj.description = "一片尚未被开发的区域";
         gyyj.difficulty = 0;
         gyyj.captureWave = 20;
-        gyyj.alwaysUnlocked = false;
+        gyyj.alwaysUnlocked = false;*/
     }
 }
