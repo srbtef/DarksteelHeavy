@@ -44,7 +44,7 @@ public class DPlanets {
                 new DysonRingMesh(DPlanet, 2.05f, 0.12f, 1024, ringColor1, ringColor2),
                 new DysonRingMesh(DPlanet, 2.06f, 0.12f, 512, ringColor1, ringColor2),
                 new DysonRingMesh(DPlanet, 2.07f, 0.12f, 512, ringColor1, ringColor2),
-                new DysonRingMesh(DPlanet, 2.10f, 0.12f, 512, ringColor1, ringColor2)
+                new DysonRingMesh(DPlanet, 2.10f, 0.12f, 512, ringColor1, ringColor2),
                 new DysonRingMesh(DPlanet, 2.30f, 0.12f, 512, ringColor1, ringColor2),
                 new DysonRingMesh(DPlanet, 3.20f, 0.12f, 512, ringColor1, ringColor2),
                 new DysonRingMesh(DPlanet, 3.21f, 0.12f, 512, ringColor1, ringColor2),
