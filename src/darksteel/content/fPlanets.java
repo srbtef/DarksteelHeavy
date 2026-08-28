@@ -2,9 +2,7 @@ package darksteel.content;
 
 
 import arc.graphics.Color;
-import darksteel.ring.DysonRingMesh;
 import darksteel.ring.ParticleRingMesh;
-import mindustry.content.Blocks;
 import mindustry.content.Planets;
 import mindustry.game.Team;
 import mindustry.graphics.g3d.HexMesh;
@@ -30,14 +28,13 @@ public class fPlanets {
         fusionPlanet.atmosphereRadIn = 0.02f;
         fusionPlanet.atmosphereRadOut = 0.28f;
         fusionPlanet.allowLaunchToNumbered = true;
-        fusionPlanet.startSector = 32;
-        fusionPlanet.defaultCore = Blocks.coreShard;
+        fusionPlanet.startSector = 0;
+        fusionPlanet.defaultCore = DBlocks.coreo;
 
         fusionPlanet.meshLoader = () -> new HexMesh(fusionPlanet, 5);
-        Color ringColor1 = Color.valueOf("#dd5506dc");
-        Color ringColor2 = Color.valueOf("#4600b6");
+        Color ringColor1 = Color.valueOf("#4600b6");
         // 恢复低开销的单层星环（ParticleRingMesh，性能优先）
-        fusionPlanet.cloudMeshLoader = () -> new DysonRingMesh(fusionPlanet, 1.65f, 0.12f, 512, ringColor1, ringColor2);
+        fusionPlanet.cloudMeshLoader = () -> new ParticleRingMesh(fusionPlanet, 1.6f, 512, ringColor1, false);
         fusionPlanet.ruleSetter = r -> {
             r.waveTeam = Team.crux;
             r.waves = true;
@@ -46,11 +43,18 @@ public class fPlanets {
             r.placeRangeCheck = true;
         };
 
-        undevelopedZone = new SectorPreset("undeveloped-zone", fusionPlanet, 5);
-        undevelopedZone.localizedName = "未开发区";
-        undevelopedZone.description = "一片尚未被开发的区域";
-        undevelopedZone.difficulty = 1;
-        undevelopedZone.captureWave = 20;
-        undevelopedZone.alwaysUnlocked = true;
+        SectorPreset gyqd = new SectorPreset("工业起点", fusionPlanet, 1);
+        gyqd.localizedName = "工业起点";
+        gyqd.description = "一片尚未被开发的区域";
+        gyqd.difficulty = 0;
+        gyqd.captureWave = 20;
+        gyqd.alwaysUnlocked = true;
+
+        SectorPreset gyyj = new SectorPreset("工业遗迹", fusionPlanet, 1);
+        gyyj.localizedName = "工业遗迹";
+        gyyj.description = "一片尚未被开发的区域";
+        gyyj.difficulty = 0;
+        gyyj.captureWave = 20;
+        gyyj.alwaysUnlocked = false;
     }
 }
