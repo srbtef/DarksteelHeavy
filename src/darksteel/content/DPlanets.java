@@ -11,17 +11,18 @@ import mindustry.graphics.g3d.HexMesh;
 import mindustry.graphics.g3d.MultiMesh;
 import mindustry.type.Planet;
 import mindustry.type.SectorPreset;
-import mindustry.world.meta.Env; 
+import mindustry.world.meta.Env;
 import static mindustry.content.Blocks.*;
 
 public class DPlanets {
     public static Planet DPlanet;
     public static SectorPreset undevelopedZone;
-    
+
 
     public static void load() {
-        DPlanet = new Planet("Dplanet", null, 1f, 2);
-        DPlanet.starName = "自定义标题";
+        // 构造必须传入有效恒星完成内部初始化，不能直接传null
+        DPlanet = new Planet("Dplanet", Planets.sun, 1f, 2);
+
         DPlanet.generator = new DPlanetGenerator();
         DPlanet.localizedName = "斯萨卡";
         DPlanet.visible = true;
@@ -34,14 +35,12 @@ public class DPlanets {
         DPlanet.atmosphereRadOut = 0.28f;
         DPlanet.allowLaunchToNumbered = true;
         DPlanet.startSector = 0;
-        // force use of Java-defined core block
         DPlanet.defaultCore = coreShard;
 
         DPlanet.meshLoader = () -> new HexMesh(DPlanet, 5);
         Color ringColor1 = Color.valueOf("#4600b6");
         Color ringColor2 = Color.valueOf("#ff5100");
-        // 恢复低开销的单层星环（ParticleRingMesh，性能优先）
-       DPlanet.cloudMeshLoader = () -> new MultiMesh(
+        DPlanet.cloudMeshLoader = () -> new MultiMesh(
                 new DysonRingMesh(DPlanet, 1.45f, 0.12f, 512, ringColor1, ringColor2)
         );
 
@@ -52,6 +51,14 @@ public class DPlanets {
             r.winWave = 10;
             r.placeRangeCheck = true;
         };
+
+        DPlanet.init();
+
+        // init完成后再脱离恒星
+        Planets.sun.planets.remove(DPlanet);
+        DPlanet.star = null;
+        // star==null之后 starName才生效，修改顶部分组标题文字
+        DPlanet.starName = "自定义标题";
 
        /*  SectorPreset gyqd = new SectorPreset("gyqd", DPlanet, 0);
         gyqd.localizedName = "工业起点";
