@@ -41,7 +41,7 @@ public class DPlanets {
         Color ringColor2 = Color.valueOf("#ff5100");
         // 恢复低开销的单层星环（ParticleRingMesh，性能优先）
        DPlanet.cloudMeshLoader = () -> new MultiMesh(
-                new DysonRingMesh(DPlanet, 1.45f, 0.12f, 512, ringColor1, ringColor2)
+                new DysonRingMesh(DPlanet, 1.45f, 0.12f, 512, ringColor1, ringColor2),
                 new DysonRingMesh(DPlanet, 1.65f, 0.12f, 512, ringColor1, ringColor2)
         );
 
