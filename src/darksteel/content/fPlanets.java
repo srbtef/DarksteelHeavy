@@ -34,7 +34,42 @@ public class fPlanets {
         fusionPlanet.allowLaunchToNumbered = true;
         fusionPlanet.startSector = 0;
         // prefer JSON-defined core block if present, otherwise use Java-defined DBlocks.coreo
-        CoreBlock jsonCore = (CoreBlock) Vars.content.getByName(CoreBlock.class, "玄钢核心");
+        CoreBlock jsonCore = null;
+        try {
+            // try simple getByName(String)
+            try {
+                java.lang.reflect.Method m = Vars.content.getClass().getMethod("getByName", String.class);
+                Object c = m.invoke(Vars.content, "玄钢核心");
+                if (c instanceof CoreBlock) jsonCore = (CoreBlock) c;
+            } catch (NoSuchMethodException ignored) {}
+
+            // if not found, try getByName with two params (ContentType or Class)
+            if (jsonCore == null) {
+                for (java.lang.reflect.Method m : Vars.content.getClass().getMethods()) {
+                    if (!m.getName().equals("getByName")) continue;
+                    Class<?>[] pts = m.getParameterTypes();
+                    if (pts.length != 2) continue;
+                    Object firstArg = null;
+                    // try ContentType.block if that enum exists
+                    try {
+                        Class<?> ct = Class.forName("mindustry.type.ContentType");
+                        java.lang.reflect.Field f = ct.getField("block");
+                        firstArg = f.get(null);
+                    } catch (Exception e) {
+                        // fallback to passing CoreBlock.class if method accepts Class
+                        if (pts[0].isAssignableFrom(Class.class)) firstArg = CoreBlock.class;
+                    }
+                    if (firstArg == null) continue;
+                    try {
+                        Object c = m.invoke(Vars.content, firstArg, "玄钢核心");
+                        if (c instanceof CoreBlock) {
+                            jsonCore = (CoreBlock) c;
+                            break;
+                        }
+                    } catch (IllegalArgumentException ignored) {}
+                }
+            }
+        } catch (Exception ignored) {}
         fusionPlanet.defaultCore = jsonCore != null ? jsonCore : DBlocks.coreo;
 
         fusionPlanet.meshLoader = () -> new HexMesh(fusionPlanet, 5);
