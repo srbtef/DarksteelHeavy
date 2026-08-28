@@ -1,11 +1,11 @@
 #the mod name as displayed in-game
-displayName: "Simple Core Mod"
+displayName: "玄钢重工"
 
 #the internal name of your mod
-name: "simple-core-mod"
+name: "darksteelheavy"
 
 #your name
-author: "srbtef"
+author: "容器"
 
 #the fully qualified main class of the mod
 main: "darksteel.main"
@@ -17,7 +17,7 @@ description: "A Mindustry mod with a simple core block."
 version: 1.0
 
 #the minimum game build required to run this mod
-minGameVersion: 154
+minGameVersion: 159
 
 #this is a java mod
 java: true

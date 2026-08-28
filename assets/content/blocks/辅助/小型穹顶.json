@@ -1,0 +1,23 @@
+{
+    "type": "ForceProjector",
+    "name": "小型穹顶",
+    "description": "一个穹顶,保护自己都费劲吧",
+  	"health": 200,
+	"size": 2,
+	"radius": 70,
+ 	"canOverdrive": false,
+ 	"shieldHealth": 200,
+ 	"cooldownNormal": 5,
+ 	"cooldownBrokenBase": 2,
+ 	"coolantConsumption": 0.2,
+	"consumes": {
+		"power": 16
+	},
+    "requirements": [
+        "铁/10",
+        "硅钢/30",
+        "玄钢/60"
+    ],
+    "research": "石英墙",
+    "category": "effect"
+}
