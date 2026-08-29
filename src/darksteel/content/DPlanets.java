@@ -50,7 +50,7 @@ DPlanet.cloudMeshLoader = () -> new MultiMesh(
         new ParticleRingMesh(DPlanet, 2.16f, 512, Color.valueOf("#c4d7eb"), false),
         new ParticleRingMesh(DPlanet, 2.18f, 512, Color.valueOf("#cadcef"), false),
         new ParticleRingMesh(DPlanet, 2.21f, 512, Color.valueOf("#d0e1f2"), false),
-        new ParticleRingMesh(DPlanet, 2.23f, 512, 512, Color.valueOf("#d6e6f5"), false),
+        new ParticleRingMesh(DPlanet, 2.23f, 512, Color.valueOf("#d6e6f5"), false),
         new ParticleRingMesh(DPlanet, 2.26f, 512, Color.valueOf("#dceaf7"), false),
         new ParticleRingMesh(DPlanet, 2.29f, 512, Color.valueOf("#e2effa"), false),
         new ParticleRingMesh(DPlanet, 2.30f, 512, Color.valueOf("#e6f4f8"), false)
