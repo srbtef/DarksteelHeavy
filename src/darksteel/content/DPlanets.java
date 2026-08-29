@@ -38,20 +38,18 @@ public class DPlanets {
 
 DPlanet.meshLoader = () -> new HexMesh(DPlanet, 5);
 // 外层：紫；中间过渡；内层：橙
-Color ringOuterPurple = Color.valueOf("#9966bb");
-Color ringMidMix = Color.valueOf("#cc7799");
-Color ringInnerOrange = Color.valueOf("#ffaa55");
+Color ringcolor1 = Color.valueOf("#9966bb");
+Color ringcolor2 = Color.valueOf("#cc7799");
+Color ringcolor3 = Color.valueOf("#ffaa55");
 
 DPlanet.cloudMeshLoader = () -> new MultiMesh(
-        new DysonRingMesh(DPlanet, 2.02f, 0.11f, 512, ringInnerOrange, ringMidMix, false),
-        new DysonRingMesh(DPlanet, 2.03f, 0.115f, 512, ringInnerOrange, ringMidMix, false),
-        new DysonRingMesh(DPlanet, 2.05f, 0.11f, 512, ringInnerOrange, ringMidMix, false),
-        new DysonRingMesh(DPlanet, 2.08f, 0.115f, 512, ringInnerOrange, ringMidMix, false),
-        new DysonRingMesh(DPlanet, 2.12f, 0.12f, 512, ringMidMix, ringOuterPurple, false),
-        new DysonRingMesh(DPlanet, 2.16f, 0.12f, 512, ringMidMix, ringOuterPurple, false),
-        new DysonRingMesh(DPlanet, 2.20f, 0.125f, 512, ringMidMix, ringOuterPurple, false),
-        new DysonRingMesh(DPlanet, 2.25f, 0.125f, 512, ringOuterPurple, ringOuterPurple.cpy().mul(0.82f), false),
-        new DysonRingMesh(DPlanet, 2.30f, 0.13f, 512, ringOuterPurple, ringOuterPurple.cpy().mul(0.68f), false)
+        new DysonRingMesh(DPlanet, 2.02f, 0.11f, 512, ringcolor3, ringcolor3, false),
+        new DysonRingMesh(DPlanet, 2.03f, 0.115f, 512, ringcolor3, ringcolor3, false),
+        new DysonRingMesh(DPlanet, 2.05f, 0.11f, 512, ringcolor3, ringcolor2, false),
+        new DysonRingMesh(DPlanet, 2.08f, 0.115f, 512, ringcolor2, ringcolor2, false),
+        new DysonRingMesh(DPlanet, 2.12f, 0.12f, 512, ringcolor1, ringcolor2, false),
+        new DysonRingMesh(DPlanet, 2.16f, 0.12f, 512, ringcolor1, ringcolor1, false),
+        new DysonRingMesh(DPlanet, 2.20f, 0.125f, 512, ringcolor1, ringcolor1, false),
 );
 
 
