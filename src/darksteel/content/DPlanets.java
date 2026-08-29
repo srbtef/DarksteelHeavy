@@ -38,7 +38,7 @@ public class DPlanets {
 
         DPlanet.meshLoader = () -> new HexMesh(DPlanet, 5);
         Color ringColor1 = Color.valueOf("#e6f4f8");
-        Color ringColor1 = Color.valueOf("b8c8e2");
+        Color ringColor2 = Color.valueOf("b8c8e2");
         // 恢复低开销的单层星环（ParticleRingMesh，性能优先）
 DPlanet.cloudMeshLoader = () -> new MultiMesh(
         new DysonRingMesh(DPlanet, 2.05f, 0.12f, 512, ringColor1, ringColor2, false),
