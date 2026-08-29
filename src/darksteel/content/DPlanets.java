@@ -47,9 +47,9 @@ DPlanet.cloudMeshLoader = () -> new MultiMesh(
         new DysonRingMesh(DPlanet, 2.03f, 0.115f, 512, ringcolor3, ringcolor3, false),
         new DysonRingMesh(DPlanet, 2.05f, 0.11f, 512, ringcolor3, ringcolor2, false),
         new DysonRingMesh(DPlanet, 2.08f, 0.115f, 512, ringcolor2, ringcolor2, false),
-        new DysonRingMesh(DPlanet, 2.12f, 0.12f, 512, ringcolor1, ringcolor2, false),
+        new DysonRingMesh(DPlanet, 2.12f, 0.12f, 512, ringcolor2, ringcolor1, false),
         new DysonRingMesh(DPlanet, 2.16f, 0.12f, 512, ringcolor1, ringcolor1, false),
-        new DysonRingMesh(DPlanet, 2.20f, 0.125f, 512, ringcolor1, ringcolor1, false),
+        new DysonRingMesh(DPlanet, 2.20f, 0.125f, 512, ringcolor1, ringcolor1, false)
 );
 
 
