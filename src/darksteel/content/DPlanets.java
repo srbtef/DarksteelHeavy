@@ -43,6 +43,8 @@ Color ringcolor2 = Color.valueOf("#cc7799");
 Color ringcolor3 = Color.valueOf("#ffaa55");
 
 DPlanet.cloudMeshLoader = () -> new MultiMesh(
+        new DysonRingMesh(DPlanet, 2.00f, 0.11f, 512, ringcolor3, ringcolor3, false),
+        new DysonRingMesh(DPlanet, 2.01f, 0.11f, 512, ringcolor3, ringcolor3, false),
         new DysonRingMesh(DPlanet, 2.02f, 0.11f, 512, ringcolor3, ringcolor3, false),
         new DysonRingMesh(DPlanet, 2.03f, 0.115f, 512, ringcolor3, ringcolor3, false),
         new DysonRingMesh(DPlanet, 2.05f, 0.11f, 512, ringcolor3, ringcolor2, false),
