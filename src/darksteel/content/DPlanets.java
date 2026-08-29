@@ -36,26 +36,24 @@ public class DPlanets {
         // force use of Java-defined core block
         DPlanet.defaultCore = coreShard;
 
-        DPlanet.meshLoader = () -> new HexMesh(DPlanet, 5);
-Color ringColorInner = Color.valueOf("#97B5ED");
-Color ringColorOuter = Color.valueOf("#e6f4f8");
+DPlanet.meshLoader = () -> new HexMesh(DPlanet, 5);
 DPlanet.cloudMeshLoader = () -> new MultiMesh(
-        new ParticleRingMesh(DPlanet, 2.05f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.06f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.07f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.08f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.09f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.13f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.14f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.12f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.15f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.16f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.18f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.21f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.23f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.26f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.29f, 0.12f, 512, ringColorInner, ringColorOuter, false),
-        new ParticleRingMesh(DPlanet, 2.30f, 0.12f, 512, ringColorInner, ringColorOuter, false)
+        new ParticleRingMesh(DPlanet, 2.05f, 0.12f, 512, Color.valueOf("#97B5ED"), false),
+        new ParticleRingMesh(DPlanet, 2.06f, 0.12f, 512, Color.valueOf("#9bb9ee"), false),
+        new ParticleRingMesh(DPlanet, 2.07f, 0.12f, 512, Color.valueOf("#a0bde8"), false),
+        new ParticleRingMesh(DPlanet, 2.08f, 0.12f, 512, Color.valueOf("#a7c4ec"), false),
+        new ParticleRingMesh(DPlanet, 2.09f, 0.12f, 512, Color.valueOf("#adc9ef"), false),
+        new ParticleRingMesh(DPlanet, 2.13f, 0.12f, 512, Color.valueOf("#b3cde3"), false),
+        new ParticleRingMesh(DPlanet, 2.14f, 0.12f, 512, Color.valueOf("#b8c8e2"), false),
+        new ParticleRingMesh(DPlanet, 2.12f, 0.12f, 512, Color.valueOf("#b8c8e2"), false),
+        new ParticleRingMesh(DPlanet, 2.15f, 0.12f, 512, Color.valueOf("#bed2e7"), false),
+        new ParticleRingMesh(DPlanet, 2.16f, 0.12f, 512, Color.valueOf("#c4d7eb"), false),
+        new ParticleRingMesh(DPlanet, 2.18f, 0.12f, 512, Color.valueOf("#cadcef"), false),
+        new ParticleRingMesh(DPlanet, 2.21f, 0.12f, 512, Color.valueOf("#d0e1f2"), false),
+        new ParticleRingMesh(DPlanet, 2.23f, 0.12f, 512, Color.valueOf("#d6e6f5"), false),
+        new ParticleRingMesh(DPlanet, 2.26f, 0.12f, 512, Color.valueOf("#dceaf7"), false),
+        new ParticleRingMesh(DPlanet, 2.29f, 0.12f, 512, Color.valueOf("#e2effa"), false),
+        new ParticleRingMesh(DPlanet, 2.30f, 0.12f, 512, Color.valueOf("#e6f4f8"), false)
 );
 
 
