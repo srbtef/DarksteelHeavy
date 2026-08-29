@@ -37,7 +37,6 @@ public class DPlanets {
         DPlanet.defaultCore = coreShard;
 
 DPlanet.meshLoader = () -> new HexMesh(DPlanet, 5);
-DPlanet.meshLoader = () -> new HexMesh(DPlanet, 5);
 DPlanet.cloudMeshLoader = () -> new MultiMesh(
         new ParticleRingMesh(DPlanet, 2.05f, 512, Color.valueOf("#97B5ED"), false),
         new ParticleRingMesh(DPlanet, 2.06f, 512, Color.valueOf("#9bb9ee"), false),
@@ -56,9 +55,6 @@ DPlanet.cloudMeshLoader = () -> new MultiMesh(
         new ParticleRingMesh(DPlanet, 2.29f, 512, Color.valueOf("#e2effa"), false),
         new ParticleRingMesh(DPlanet, 2.30f, 512, Color.valueOf("#e6f4f8"), false)
 );
-
-
-
 
         DPlanet.ruleSetter = r -> {
             r.waveTeam = Team.crux;
