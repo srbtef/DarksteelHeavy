@@ -38,25 +38,27 @@ public class DPlanets {
 
         DPlanet.meshLoader = () -> new HexMesh(DPlanet, 5);
         Color ringColor1 = Color.valueOf("#e6f4f8");
+        Color ringColor1 = Color.valueOf("b8c8e2");
         // 恢复低开销的单层星环（ParticleRingMesh，性能优先）
-       DPlanet.cloudMeshLoader = () -> new MultiMesh(
-                new DysonRingMesh(DPlanet, 2.05f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.06f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.07f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.08f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.09f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.13f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.14f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.12f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.15f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.16f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.18f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.21f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.23f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.26f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.29f, 0.12f, 512, ringColor1),
-                new DysonRingMesh(DPlanet, 2.30f, 0.12f, 512, ringColor1)
-        );
+DPlanet.cloudMeshLoader = () -> new MultiMesh(
+        new DysonRingMesh(DPlanet, 2.05f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.06f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.07f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.08f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.09f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.13f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.14f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.12f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.15f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.16f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.18f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.21f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.23f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.26f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.29f, 0.12f, 512, ringColor1, ringColor2, false),
+        new DysonRingMesh(DPlanet, 2.30f, 0.12f, 512, ringColor1, ringColor2, false)
+);
+
 
         DPlanet.ruleSetter = r -> {
             r.waveTeam = Team.crux;
